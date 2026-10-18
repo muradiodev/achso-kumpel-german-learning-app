@@ -8,7 +8,8 @@
 #
 # Build locally -> tar -> scp -> docker compose up --build in ~/achsokumpel.
 # No sudo needed; host nginx was set up once with deploy/host-setup.sh.
-# Accounts live in the Docker volume achsokumpel-data and survive deploys.
+# Accounts live in PostgreSQL (container achsokumpel-db-1, volume achsokumpel-pgdata).
+# The database password is in deploy/secrets/server.env (not in git).
 #
 set -euo pipefail
 
@@ -27,7 +28,9 @@ red(){ printf '\033[1;31m✗ %s\033[0m\n' "$*" >&2; }
 ssh_do(){ ssh "${SSH_OPTS[@]}" -i "$KEY" "$HOST" "$@"; }
 scp_up(){ scp "${SSH_OPTS[@]}" -i "$KEY" "$1" "$HOST:$2"; }
 
+SECRETS="$ROOT_DIR/deploy/secrets/server.env"
 [ -f "$KEY" ] || { red "SSH key not found: $KEY"; exit 1; }
+[ -f "$SECRETS" ] || { red "Missing $SECRETS (see deploy/secrets/README.md)"; exit 1; }
 
 # wait until a URL on the server returns 200
 check_health(){
@@ -38,9 +41,9 @@ check_health(){
 
 target="${1:-all}"
 case "$target" in
-  all) services="web api" ;;
+  all) services="web api db" ;;
   web) services="web" ;;
-  api) services="api" ;;
+  api) services="api db" ;;
   *) echo "usage: $0 [all|web|api]"; exit 1 ;;
 esac
 start=$SECONDS
@@ -48,6 +51,7 @@ start=$SECONDS
 # ---- build + stage ----
 rm -rf "$STAGE" && mkdir -p "$STAGE"
 cp "$ROOT_DIR/deploy/docker-compose.yml" "$ROOT_DIR/deploy/web.Dockerfile" "$ROOT_DIR/deploy/web.conf" "$STAGE/"
+cp "$SECRETS" "$STAGE/.env"
 
 if [[ " $services " == *" web "* ]]; then
   cyan "WEBSITE: building landing + web app"
@@ -81,6 +85,7 @@ for s in $SERVICES; do
   [ "$s" = api ] && rm -rf "$D/server"
 done
 tar xzf /tmp/achsokumpel.tgz -C "$D" && rm -f /tmp/achsokumpel.tgz
+chmod 600 "$D/.env"
 cd "$D" && docker compose up -d --build $SERVICES
 docker image prune -f >/dev/null
 REMOTE

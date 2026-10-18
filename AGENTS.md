@@ -48,7 +48,7 @@ German practice app for B1 to C1 learners (work + everyday German). JavaScript o
 - UI strings live in `src/i18n/locales/en.js`; use `const { t } = useI18n()`, never inline English in screens.
 - Design tokens in `src/theme/index.js` (mirrored in `brand/tokens.json`): one brand hue, Kumpel Purple, on violet-tinted neutrals, light + dark. Font: Plus Jakarta Sans via `fontFor(weight)`; never set fontWeight on text directly. Icons: Phosphor through `src/components/icon.js` with semantic names only. Radius rule: buttons/inputs `md`, cards `lg`, chips `pill`. No em dashes in any copy.
 - Registration is mandatory. The guards in `src/app/_layout.js` move the user through welcome → register → setup/profile → setup/avatar → setup/levels → tabs.
-- Auth uses `remote-auth-provider.js` (API in `server/`) when `EXPO_PUBLIC_API_URL` is set, otherwise device-local `local-auth-provider.js`; both keep the same methods. Progress syncs to `/v1/progress` (last write wins on `updatedAt`).
+- Auth uses `remote-auth-provider.js` (API in `server/`) when `EXPO_PUBLIC_API_URL` is set, otherwise device-local `local-auth-provider.js`; both keep the same methods. Progress syncs to `/v1/progress` (last write wins on `updatedAt`), on change and when the app returns to the foreground. API data is in PostgreSQL; its password is only in the gitignored `deploy/secrets/server.env`.
 - Deploy: `./deploy.sh [all|web|api]` to DEVHUBPOINT01, see docs/DEPLOY.md. No CI.
 - AI features go through `src/features/ai/ai-service.js` (see `docs/AI.md`). No API keys in the app.
 - IDs in `src/data` are stored in user progress. Do not rename them; sentences are positional per level, so append only.

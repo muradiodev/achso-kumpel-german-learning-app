@@ -55,3 +55,7 @@ server/node_modules/
 server/version.json
 .deploy-stage/
 .deploy-achsokumpel.tgz
+
+# Server passwords (never commit)
+deploy/secrets/*
+!deploy/secrets/README.md

@@ -24,35 +24,33 @@ function cleanProfile(input) {
   return out;
 }
 
+// BIGINT columns come back as strings (pg) or bigints (PGlite).
 const publicUser = (row) => ({
   id: row.id,
   email: row.email,
-  profile: JSON.parse(row.profile),
-  createdAt: row.created_at,
+  profile: row.profile,
+  createdAt: Number(row.created_at),
 });
 
 export function createApp({ db, allowedOrigins, versionFile }) {
   const app = new Hono();
   const authLimit = rateLimiter({ limit: 20, windowMs: 60_000 });
 
-  const q = {
-    userByEmail: db.prepare('SELECT * FROM users WHERE email = ?'),
-    userById: db.prepare('SELECT * FROM users WHERE id = ?'),
-    insertUser: db.prepare('INSERT INTO users (id, email, password_hash, profile, created_at) VALUES (?, ?, ?, ?, ?)'),
-    updateProfile: db.prepare('UPDATE users SET profile = ? WHERE id = ?'),
-    insertSession: db.prepare('INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)'),
-    session: db.prepare('SELECT * FROM sessions WHERE token_hash = ? AND expires_at > ?'),
-    deleteSession: db.prepare('DELETE FROM sessions WHERE token_hash = ?'),
-    progress: db.prepare('SELECT data, updated_at FROM progress WHERE user_id = ?'),
-    upsertProgress: db.prepare(
-      'INSERT INTO progress (user_id, data, updated_at) VALUES (?, ?, ?) ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at',
-    ),
-  };
+  const one = async (sql, params) => (await db.query(sql, params)).rows[0] ?? null;
+  const userByEmail = (email) => one('SELECT * FROM users WHERE email = $1', [email]);
+  const userById = (id) => one('SELECT * FROM users WHERE id = $1', [id]);
+  const progressOf = (userId) => one('SELECT data, updated_at FROM progress WHERE user_id = $1', [userId]);
 
-  function startSession(userId) {
+  async function startSession(userId) {
     const token = newToken();
     const now = Date.now();
-    q.insertSession.run(hashToken(token), userId, now, now + SESSION_DAYS * 864e5);
+    await db.query('DELETE FROM sessions WHERE user_id = $1 AND expires_at < $2', [userId, now]);
+    await db.query('INSERT INTO sessions (token_hash, user_id, created_at, expires_at) VALUES ($1, $2, $3, $4)', [
+      hashToken(token),
+      userId,
+      now,
+      now + SESSION_DAYS * 864e5,
+    ]);
     return token;
   }
 
@@ -77,7 +75,12 @@ export function createApp({ db, allowedOrigins, versionFile }) {
   const requireUser = async (c, next) => {
     const header = c.req.header('authorization') ?? '';
     const token = header.startsWith('Bearer ') ? header.slice(7) : null;
-    const session = token ? q.session.get(hashToken(token), Date.now()) : null;
+    const session = token
+      ? await one('SELECT user_id FROM sessions WHERE token_hash = $1 AND expires_at > $2', [
+          hashToken(token),
+          Date.now(),
+        ])
+      : null;
     if (!session) return c.json({ error: 'unauthorized' }, 401);
     c.set('userId', session.user_id);
     c.set('tokenHash', hashToken(token));
@@ -99,40 +102,51 @@ export function createApp({ db, allowedOrigins, versionFile }) {
     if (!isEmail(email)) return c.json({ error: 'auth.errors.emailInvalid' }, 400);
     if (!isPassword(password)) return c.json({ error: 'auth.errors.passwordShort' }, 400);
     const key = email.trim().toLowerCase();
-    if (q.userByEmail.get(key)) return c.json({ error: 'auth.errors.emailTaken' }, 409);
     const id = newId();
-    q.insertUser.run(id, key, await hashPassword(password), '{}', Date.now());
-    return c.json({ token: startSession(id), user: publicUser(q.userById.get(id)) }, 201);
+    try {
+      await db.query('INSERT INTO users (id, email, password_hash, profile, created_at) VALUES ($1, $2, $3, $4, $5)', [
+        id,
+        key,
+        await hashPassword(password),
+        '{}',
+        Date.now(),
+      ]);
+    } catch (error) {
+      if (error.code === '23505') return c.json({ error: 'auth.errors.emailTaken' }, 409); // unique email
+      throw error;
+    }
+    return c.json({ token: await startSession(id), user: publicUser(await userById(id)) }, 201);
   });
 
   app.post('/v1/auth/login', limited, async (c) => {
     const { email, password } = await c.req.json().catch(() => ({}));
-    const row = isEmail(email) ? q.userByEmail.get(email.trim().toLowerCase()) : null;
+    const row = isEmail(email) ? await userByEmail(email.trim().toLowerCase()) : null;
     // Same answer for "no such user" and "wrong password".
     if (!row || !isPassword(password) || !(await verifyPassword(password, row.password_hash))) {
       return c.json({ error: 'auth.errors.invalidCredentials' }, 401);
     }
-    return c.json({ token: startSession(row.id), user: publicUser(row) });
+    return c.json({ token: await startSession(row.id), user: publicUser(row) });
   });
 
-  app.post('/v1/auth/logout', requireUser, (c) => {
-    q.deleteSession.run(c.get('tokenHash'));
+  app.post('/v1/auth/logout', requireUser, async (c) => {
+    await db.query('DELETE FROM sessions WHERE token_hash = $1', [c.get('tokenHash')]);
     return c.json({ ok: true });
   });
 
-  app.get('/v1/me', requireUser, (c) => c.json({ user: publicUser(q.userById.get(c.get('userId'))) }));
+  app.get('/v1/me', requireUser, async (c) => c.json({ user: publicUser(await userById(c.get('userId'))) }));
 
   app.patch('/v1/me/profile', requireUser, async (c) => {
     const body = await c.req.json().catch(() => ({}));
-    const row = q.userById.get(c.get('userId'));
-    const profile = { ...JSON.parse(row.profile), ...cleanProfile(body) };
-    q.updateProfile.run(JSON.stringify(profile), row.id);
-    return c.json({ user: publicUser(q.userById.get(row.id)) });
+    const row = await one('UPDATE users SET profile = profile || $1::jsonb WHERE id = $2 RETURNING *', [
+      JSON.stringify(cleanProfile(body)),
+      c.get('userId'),
+    ]);
+    return c.json({ user: publicUser(row) });
   });
 
-  app.get('/v1/progress', requireUser, (c) => {
-    const row = q.progress.get(c.get('userId'));
-    return c.json(row ? { data: JSON.parse(row.data), updatedAt: row.updated_at } : { data: null, updatedAt: 0 });
+  app.get('/v1/progress', requireUser, async (c) => {
+    const row = await progressOf(c.get('userId'));
+    return c.json(row ? { data: row.data, updatedAt: Number(row.updated_at) } : { data: null, updatedAt: 0 });
   });
 
   // Last write wins: the client sends when its copy last changed. An older
@@ -143,12 +157,14 @@ export function createApp({ db, allowedOrigins, versionFile }) {
       return c.json({ error: 'invalid_progress' }, 400);
     }
     const userId = c.get('userId');
-    const current = q.progress.get(userId);
-    if (!current || updatedAt > current.updated_at) {
-      q.upsertProgress.run(userId, JSON.stringify(data), Math.min(updatedAt, Date.now() + 60_000));
-    }
-    const row = q.progress.get(userId);
-    return c.json({ data: JSON.parse(row.data), updatedAt: row.updated_at });
+    await db.query(
+      `INSERT INTO progress (user_id, data, updated_at) VALUES ($1, $2::jsonb, $3)
+       ON CONFLICT (user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at
+       WHERE progress.updated_at < excluded.updated_at`,
+      [userId, JSON.stringify(data), Math.round(Math.min(updatedAt, Date.now() + 60_000))],
+    );
+    const row = await progressOf(userId);
+    return c.json({ data: row.data, updatedAt: Number(row.updated_at) });
   });
 
   app.notFound((c) => c.json({ error: 'not_found' }, 404));

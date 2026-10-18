@@ -10,12 +10,10 @@ COPY src ./src
 # deploy.sh puts the current release manifest here before the build.
 COPY version.json ./
 
-# The SQLite file lives on a volume mounted at /data.
-ENV DATABASE_FILE=/data/achsokumpel.db \
-    VERSION_FILE=/app/version.json \
+# DATABASE_URL comes from docker compose (deploy/secrets/server.env).
+ENV VERSION_FILE=/app/version.json \
     PORT=8787
 
-RUN mkdir -p /data && chown node:node /data
 USER node
 
 EXPOSE 8787

@@ -1,13 +1,18 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { PGlite } from '@electric-sql/pglite';
+
 import { createApp } from '../src/app.js';
-import { openDatabase } from '../src/db.js';
+import { migrate } from '../src/db.js';
 
 const ORIGIN = 'https://achsokumpel.deviofy.com';
 
-function setup() {
-  const app = createApp({ db: openDatabase(':memory:'), allowedOrigins: [ORIGIN], versionFile: '/nope.json' });
+// An in-process Postgres, so the tests need no database server.
+async function setup() {
+  const db = new PGlite();
+  await migrate(db);
+  const app = createApp({ db, allowedOrigins: [ORIGIN], versionFile: '/nope.json' });
   const call = (method, path, body, token) =>
     app.request(path, {
       method,
@@ -22,7 +27,7 @@ function setup() {
 }
 
 test('register, login, profile, progress', async () => {
-  const { call } = setup();
+  const { call } = await setup();
 
   const reg = await call('POST', '/v1/auth/register', { email: 'Leyla@Example.com', password: 'kumpel-test-1' });
   assert.equal(reg.status, 201);
@@ -63,7 +68,7 @@ test('register, login, profile, progress', async () => {
 });
 
 test('rejects bad input and unknown origins', async () => {
-  const { app, call } = setup();
+  const { app, call } = await setup();
   assert.equal((await call('POST', '/v1/auth/register', { email: 'nope', password: 'kumpel-test-1' })).status, 400);
   assert.equal((await call('POST', '/v1/auth/register', { email: 'a@b.de', password: 'short' })).status, 400);
   assert.equal((await call('GET', '/v1/me')).status, 401);

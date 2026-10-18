@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { AppState } from 'react-native';
 
 import { SENTENCES } from '@/data';
 import { useAuth } from '@/features/auth/auth-context';
@@ -46,6 +47,8 @@ export function ProgressProvider({ children }) {
   const [state, setState] = useState({ loaded: false, data: EMPTY, notes: [], readOnly: false });
   const saveTimer = useRef(null);
   const syncTimer = useRef(null);
+  const latest = useRef(state);
+  latest.current = state;
 
   useEffect(() => {
     let alive = true;
@@ -108,6 +111,34 @@ export function ProgressProvider({ children }) {
     }, 3000);
     return () => clearTimeout(syncTimer.current);
   }, [state, userId]);
+
+  // Coming back to the app (another tab, phone unlocked): take a newer copy
+  // from the server, or send ours if a push failed while offline.
+  useEffect(() => {
+    if (!API_URL || !userId) return undefined;
+    const sub = AppState.addEventListener('change', async (next) => {
+      const current = latest.current;
+      if (next !== 'active' || !current.loaded || current.readOnly) return;
+      try {
+        const token = await getAuthToken();
+        const remote = await api('/v1/progress', { token });
+        const localAt = current.data.updatedAt ?? 0;
+        if (remote.data && remote.updatedAt > localAt) {
+          const merged = migrateProgress(remote.data);
+          setState((prev) =>
+            (prev.data.updatedAt ?? 0) >= remote.updatedAt
+              ? prev
+              : { ...prev, data: { ...merged.data, updatedAt: remote.updatedAt } },
+          );
+        } else if (localAt > remote.updatedAt) {
+          await api('/v1/progress', { method: 'PUT', token, body: { data: current.data, updatedAt: localAt } });
+        }
+      } catch {
+        // Offline: try again next time.
+      }
+    });
+    return () => sub.remove();
+  }, [userId]);
 
   const update = useCallback((fn) => {
     setState((prev) => {

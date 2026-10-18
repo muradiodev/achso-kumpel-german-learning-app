@@ -134,7 +134,7 @@ You create an account with an email and a password, without email confirmation, 
 
 Under **Me** you can switch between **Light**, **Dark** and **Auto** appearance, edit your details in **Account settings**, and change the app language in **Language settings** (English or Azerbaijani). Translations of the learning content are English for now.
 
-Your account lives on the AchsoKumpel server, so you log in with the same email and password on your phone and on the web. Your progress syncs a few seconds after each change. Without a connection the app keeps working with the copy on your device and sends it the next time it can. If two devices changed your progress, the most recent copy wins.
+Your account lives on the AchsoKumpel server, so you log in with the same email and password on your phone and on the web. Your progress syncs a few seconds after each change, and the app checks for a newer copy whenever you come back to it. Without a connection the app keeps working with the copy on your device and sends it the next time it can. If two devices changed your progress, the most recent copy wins.
 
 Builds made without `EXPO_PUBLIC_API_URL` (for example a fork run locally) don't use a server: the account and progress then stay only on that device or browser.
 
@@ -150,7 +150,8 @@ npx expo start        # press a for Android, w for web, or scan the QR code with
 Locally the app uses device-only accounts. To try it with the server, start the API in a second terminal and point the app at it:
 
 ```bash
-cd server && npm install && npm run dev                # API on http://localhost:8787
+cd server && npm install
+DATABASE_URL=postgres://user:password@localhost:5432/achsokumpel npm run dev   # API on http://localhost:8787
 EXPO_PUBLIC_API_URL=http://localhost:8787 npx expo start
 ```
 
@@ -160,7 +161,7 @@ EXPO_PUBLIC_API_URL=http://localhost:8787 npx expo start
 
 The website has two parts: the landing page at `/` (`landing/`) and the web app at `/app`. `npm run build:site` builds both into `site/`, and `npm run preview:site` serves it on http://localhost:8100.
 
-The API in `server/` (Node, SQLite) handles accounts and progress sync. `cd server && npm test` runs its tests.
+The API in `server/` (Node, PostgreSQL) handles accounts and progress sync. Its tests run against an in-process Postgres, so they need no database server. `cd server && npm test` runs its tests.
 
 Both run as Docker containers on the server. To deploy, run this from the project folder in Git Bash:
 
@@ -215,7 +216,7 @@ src/
   data/           words, sentences, grammar, verbs, writing tasks, changelog
   i18n/           interface strings and content-language helpers
   theme/          brand colours, spacing, type (light and dark)
-server/           API: accounts and progress sync (Node, SQLite, Docker)
+server/           API: accounts and progress sync (Node, PostgreSQL, Docker)
 landing/          landing page served at /
 deploy/           Docker and nginx files for the server (see docs/DEPLOY.md)
 brand/            logo files, brand guide, colour tokens, brand board
