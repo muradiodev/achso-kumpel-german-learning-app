@@ -41,7 +41,7 @@ export function LevelsForm({ header, ctaLabel, onDone }) {
   return (
     <Screen footer={<Button label={ctaLabel} onPress={save} loading={saving} />}>
       {header}
-      <AppText variant="title">{t('setup.levelsTitle')}</AppText>
+      <AppText variant="display">{t('setup.levelsTitle')}</AppText>
       <AppText tone="muted" style={{ marginTop: space.sm }}>
         {t('setup.levelsSub')}
       </AppText>
@@ -68,17 +68,24 @@ export function LevelsForm({ header, ctaLabel, onDone }) {
                 },
               ]}
             >
-              <AppText variant="heading" style={styles.levelCode}>
-                {level}
-              </AppText>
-              <AppText variant="small" tone="muted" style={styles.levelText}>
+              <View
+                style={[styles.levelCode, { backgroundColor: active ? colors.accent : colors.surfaceAlt }]}
+              >
+                <AppText variant="small" weight="800" style={{ color: active ? colors.onAccent : colors.text }}>
+                  {level}
+                </AppText>
+              </View>
+              <AppText variant="small" weight={active ? '600' : '400'} tone={active ? 'default' : 'muted'} style={styles.levelText}>
                 {t(`levels.${level}`)}
               </AppText>
-              <Icon
-                name={active ? 'checkCircle' : 'circle'}
-                size={22}
-                color={active ? colors.accent : colors.textFaint}
-              />
+              <View
+                style={[
+                  styles.check,
+                  { borderColor: active ? colors.accent : colors.border, backgroundColor: active ? colors.accent : 'transparent' },
+                ]}
+              >
+                {active ? <Icon name="check" size={16} color={colors.onAccent} weight="bold" /> : null}
+              </View>
             </Pressable>
           );
         })}
@@ -112,10 +119,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 14,
     borderWidth: 1,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 14,
+    minHeight: 56,
+    paddingVertical: 10,
   },
-  levelCode: { width: 32 },
+  levelCode: { minWidth: 40, height: 28, borderRadius: 8, alignItems: 'center', justifyContent: 'center' },
+  check: { width: 24, height: 24, borderRadius: 8, borderWidth: 2, alignItems: 'center', justifyContent: 'center' },
   levelText: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

@@ -10,9 +10,9 @@ export function EmptyState({ icon = 'leaf', title, body, actionLabel, onAction }
   return (
     <View style={styles.wrap}>
       <View style={[styles.icon, { backgroundColor: colors.accentSoft }]}>
-        <Icon name={icon} size={28} color={colors.accent} />
+        <Icon name={icon} size={40} color={colors.accent} weight="duotone" />
       </View>
-      <AppText variant="heading" align="center">
+      <AppText variant="title" align="center">
         {title}
       </AppText>
       {body ? (
@@ -27,6 +27,6 @@ export function EmptyState({ icon = 'leaf', title, body, actionLabel, onAction }
 
 const styles = StyleSheet.create({
   wrap: { flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, paddingVertical: 48 },
-  icon: { width: 64, height: 64, borderRadius: 32, alignItems: 'center', justifyContent: 'center', marginBottom: 4 },
+  icon: { width: 88, height: 88, borderRadius: 44, alignItems: 'center', justifyContent: 'center', marginBottom: 8 },
   action: { marginTop: 8, alignSelf: 'stretch' },
 });

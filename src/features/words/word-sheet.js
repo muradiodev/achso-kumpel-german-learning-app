@@ -65,8 +65,8 @@ function WordSheet({ word, context, onClose }) {
           styles.sheet,
           {
             backgroundColor: colors.surface,
-            borderTopLeftRadius: radius.lg + 8,
-            borderTopRightRadius: radius.lg + 8,
+            borderTopLeftRadius: radius.sheet,
+            borderTopRightRadius: radius.sheet,
             padding: space.xl,
             paddingBottom: insets.bottom + space.xl,
           },
@@ -77,13 +77,13 @@ function WordSheet({ word, context, onClose }) {
           <View style={styles.flex}>
             <AppText variant="display">{headword}</AppText>
             {entry ? (
-              <AppText variant="heading" tone="accent">
+              <AppText variant="title" tone="accent">
                 {tr(entry.tr, lang)}
               </AppText>
             ) : null}
             {entry?.plural ? <AppText variant="small" tone="muted">{`Plural: ${entry.plural}`}</AppText> : null}
           </View>
-          <SpeakButton text={headword} size={44} />
+          <SpeakButton text={headword} size={56} />
         </View>
 
         {!entry ? (
@@ -96,13 +96,18 @@ function WordSheet({ word, context, onClose }) {
           <View
             style={[
               styles.context,
-              { backgroundColor: colors.surfaceAlt, borderRadius: radius.md, marginTop: space.lg },
+              { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, marginTop: space.lg },
             ]}
           >
             <AppText variant="caption" tone="faint">
               {t('myWords.foundIn')}
             </AppText>
-            <AppText weight="600">{context.de}</AppText>
+            <View style={styles.head}>
+              <AppText weight="600" style={styles.flex}>
+                {context.de}
+              </AppText>
+              <SpeakButton text={context.de} size={36} ground={colors.surface} />
+            </View>
             {context.tr ? (
               <AppText variant="small" tone="muted">
                 {tr(context.tr, lang)}
@@ -124,10 +129,10 @@ function WordSheet({ word, context, onClose }) {
 }
 
 const styles = StyleSheet.create({
-  scrim: { backgroundColor: 'rgba(9, 7, 16, 0.5)' },
+  scrim: { backgroundColor: 'rgba(9, 7, 16, 0.6)' },
   sheet: { position: 'absolute', left: 0, right: 0, bottom: 0 },
-  grabber: { width: 40, height: 4, borderRadius: 2, alignSelf: 'center', marginBottom: 16 },
+  grabber: { width: 40, height: 5, borderRadius: 3, alignSelf: 'center', marginBottom: 16 },
   head: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   flex: { flex: 1, gap: 2 },
-  context: { padding: 14, gap: 4 },
+  context: { padding: 16, gap: 4 },
 });

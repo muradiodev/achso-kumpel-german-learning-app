@@ -71,5 +71,5 @@ const styles = StyleSheet.create({
   wrap: { gap: 10 },
   row: { flexDirection: 'row', gap: 8 },
   flex: { flex: 1 },
-  button: { minHeight: 52, alignItems: 'center', justifyContent: 'center' },
+  button: { minHeight: 56, alignItems: 'center', justifyContent: 'center' },
 });

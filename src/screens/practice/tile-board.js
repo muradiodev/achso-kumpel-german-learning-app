@@ -1,10 +1,11 @@
 import * as Haptics from 'expo-haptics';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { GestureDetector, useCompetingGestures, usePanGesture, useTapGesture } from 'react-native-gesture-handler';
 import Animated, {
   FadeIn,
   LinearTransition,
+  useAnimatedReaction,
   useAnimatedStyle,
   useReducedMotion,
   useSharedValue,
@@ -42,6 +43,8 @@ function Tile({ text, tone = 'default', ghost = false, lifted }) {
           borderRadius: radius.md,
           backgroundColor: ghost ? colors.surfaceAlt : palette.bg,
           borderColor: ghost ? colors.surfaceAlt : lifted ? colors.accent : palette.border,
+          // A deeper lower edge makes default tiles read as keys you can press.
+          borderBottomColor: ghost ? colors.surfaceAlt : lifted ? colors.accent : tone === 'default' ? colors.tileLip : palette.border,
         },
       ]}
     >
@@ -50,6 +53,18 @@ function Tile({ text, tone = 'default', ghost = false, lifted }) {
       </AppText>
     </View>
   );
+}
+
+// The dragged tile gets an accent border while it is lifted.
+function LiftedTile({ text, tone, lifted }) {
+  const [isLifted, setLifted] = useState(false);
+  useAnimatedReaction(
+    () => lifted.get(),
+    (now, before) => {
+      if (now !== before) scheduleOnRN(setLifted, Boolean(now));
+    },
+  );
+  return <Tile text={text} tone={tone} lifted={isLifted} />;
 }
 
 const AnswerTile = memo(function AnswerTile({ tile, tone, layouts, order, locked, onRemove, onMove }) {
@@ -114,6 +129,7 @@ const AnswerTile = memo(function AnswerTile({ tile, tone, layouts, order, locked
       { translateX: tx.get() },
       { translateY: ty.get() },
       { scale: withSpring(lifted.get() ? 1.06 : 1, SPRING) },
+      { rotate: lifted.get() && !reduced ? '-2deg' : '0deg' },
     ],
   }));
 
@@ -133,7 +149,7 @@ const AnswerTile = memo(function AnswerTile({ tile, tone, layouts, order, locked
         accessibilityRole="button"
         accessibilityLabel={tile.text}
       >
-        <Tile text={tile.text} tone={tone} />
+        <LiftedTile text={tile.text} tone={tone} lifted={lifted} />
       </Animated.View>
     </GestureDetector>
   );
@@ -167,8 +183,9 @@ export function TileBoard({ tiles, answer, onChange, wrong, solved, locked }) {
   return (
     <View style={{ gap: space.xl }}>
       <View style={[styles.answer, { borderColor: colors.border }]}>
-        <View style={[styles.rule, { top: 56, backgroundColor: colors.border }]} />
-        <View style={[styles.rule, { top: 112, backgroundColor: colors.border }]} />
+        {/* Ruled lines between tile rows, like a page you write on. */}
+        <View style={[styles.rule, { top: 60, backgroundColor: colors.border }]} />
+        <View style={[styles.rule, { top: 116, backgroundColor: colors.border }]} />
         {answer.map((id, i) => (
           <AnswerTile
             key={id}
@@ -209,7 +226,7 @@ export function TileBoard({ tiles, answer, onChange, wrong, solved, locked }) {
 
 const styles = StyleSheet.create({
   answer: {
-    minHeight: 116,
+    minHeight: 120,
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignContent: 'flex-start',
@@ -229,10 +246,10 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   tile: {
-    minHeight: 44,
-    paddingHorizontal: 14,
+    minHeight: 48,
+    paddingHorizontal: 16,
     justifyContent: 'center',
     borderWidth: 1.5,
-    borderBottomWidth: 3,
+    borderBottomWidth: 3.5,
   },
 });

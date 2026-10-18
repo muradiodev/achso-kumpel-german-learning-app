@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router/js-tabs';
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { useIsFramed } from '@/components/app-frame';
 import { Icon } from '@/components/icon';
@@ -31,14 +31,27 @@ export default function TabsLayout() {
         tabBarStyle: [
           { backgroundColor: colors.surface, borderTopColor: colors.border },
           // Web has no safe-area inset, and the default height clips the labels.
-          Platform.OS === 'web' && { height: 64, paddingBottom: 8 },
-          framed && { height: 68, paddingBottom: 12 },
+          Platform.OS === 'web' && { height: 76, paddingTop: 6, paddingBottom: 12 },
+          framed && { height: 80, paddingTop: 6, paddingBottom: 16 },
         ],
-        tabBarLabelStyle: { fontFamily: fontFor('600'), fontSize: 11 },
+        tabBarLabelStyle: { fontFamily: fontFor('600'), fontSize: 11, marginTop: 2 },
         sceneStyle: { backgroundColor: colors.bg },
-        tabBarIcon: ({ color, focused, size }) => (
-          <Icon name={ICONS[route.name]} size={size} color={color} weight={focused ? 'fill' : 'regular'} />
+        // The active tab sits on a soft accent pill so it reads at a glance.
+        tabBarIcon: ({ color, focused }) => (
+          <View
+            style={{
+              width: 56,
+              height: 30,
+              borderRadius: 15,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: focused ? colors.accentSoft : 'transparent',
+            }}
+          >
+            <Icon name={ICONS[route.name]} size={22} color={color} weight={focused ? 'fill' : 'regular'} />
+          </View>
         ),
+        tabBarIconStyle: { width: 56, height: 30 },
       })}
     >
       <Tabs.Screen name="index" options={{ title: t('tabs.today') }} />

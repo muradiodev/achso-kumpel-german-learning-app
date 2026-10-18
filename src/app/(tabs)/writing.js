@@ -4,6 +4,7 @@ import { FlatList, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/app-text';
+import { Badge } from '@/components/badge';
 import { MAX_WIDTH } from '@/components/screen';
 import { Chip } from '@/components/chip';
 import { Surface } from '@/components/surface';
@@ -29,21 +30,14 @@ export default function Writing() {
     ({ item }) => {
       const copied = writing[item.id]?.copied ?? 0;
       return (
-        <Surface onPress={() => router.push(`/writing/${item.id}`)} style={{ marginBottom: space.md }}>
-          <AppText variant="caption" tone="accent">
-            {`${t(`writing.filters.${item.type}`)} · ${item.level}`}
-          </AppText>
-          <AppText weight="600" style={{ marginTop: space.xs }}>
-            {tr(item.title, lang)}
-          </AppText>
-          <AppText variant="small" tone="muted" style={{ marginTop: space.xs }}>
-            {[
-              t('writing.minutes', { count: item.minutes }),
-              t('writing.words', { count: item.words }),
-              copied ? t('writing.copiedTimes', { count: copied }) : null,
-            ]
-              .filter(Boolean)
-              .join('  ·  ')}
+        <Surface onPress={() => router.push(`/writing/${item.id}`)} style={{ marginBottom: space.md, gap: space.sm }}>
+          <View style={styles.badges}>
+            <Badge label={`${t(`writing.filters.${item.type}`)} · ${item.level}`} />
+            {copied ? <Badge label={t('writing.copiedTimes', { count: copied })} tone="neutral" icon="done" /> : null}
+          </View>
+          <AppText variant="heading">{tr(item.title, lang)}</AppText>
+          <AppText variant="small" tone="muted">
+            {[t('writing.minutes', { count: item.minutes }), t('writing.words', { count: item.words })].join('  ·  ')}
           </AppText>
         </Surface>
       );
@@ -67,8 +61,8 @@ export default function Writing() {
       }}
       ListHeaderComponent={
         <View style={{ marginBottom: space.lg }}>
-          <AppText variant="title">{t('writing.title')}</AppText>
-          <AppText tone="muted" style={{ marginTop: space.sm }}>
+          <AppText variant="display">{t('writing.title')}</AppText>
+          <AppText variant="small" tone="muted" style={{ marginTop: space.xs }}>
             {t('writing.sub')}
           </AppText>
           <View style={[styles.chips, { marginTop: space.lg }]}>
@@ -95,4 +89,5 @@ export default function Writing() {
 
 const styles = StyleSheet.create({
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+  badges: { flexDirection: 'row', justifyContent: 'space-between', gap: 8 },
 });

@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 
 import { AppText } from '@/components/app-text';
+import { Stepper } from '@/components/stepper';
 import { Button } from '@/components/button';
 import { useAuth } from '@/features/auth/auth-context';
 import { useI18n } from '@/i18n';
@@ -17,10 +18,8 @@ export default function ProfileSetup() {
       secondaryAction={<Button label={t('profile.logout')} variant="ghost" onPress={logout} />}
       header={
         <>
-          <AppText variant="caption" tone="accent">
-            {t('common.stepOf', { step: 1, total: 3 })}
-          </AppText>
-          <AppText variant="title" style={{ marginTop: 8 }}>
+          <Stepper step={1} />
+          <AppText variant="display" style={{ marginTop: 20 }}>
             {t('setup.profileTitle')}
           </AppText>
           <AppText tone="muted" style={{ marginTop: 8 }}>

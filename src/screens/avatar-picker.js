@@ -28,7 +28,7 @@ export function AvatarPicker({ header, onDone }) {
   return (
     <Screen footer={<Button label={t('setup.avatarCta')} onPress={save} loading={saving} />}>
       {header}
-      <AppText variant="title">{t('setup.avatarTitle')}</AppText>
+      <AppText variant="display">{t('setup.avatarTitle')}</AppText>
       <AppText tone="muted" style={{ marginTop: space.sm }}>
         {t('setup.avatarSub')}
       </AppText>
@@ -47,7 +47,7 @@ export function AvatarPicker({ header, onDone }) {
               accessibilityRole="radio"
               accessibilityState={{ checked: active }}
               accessibilityLabel={avatar.id}
-              style={[styles.cell, { borderColor: active ? colors.accent : 'transparent' }]}
+              style={[styles.cell, { borderColor: active ? colors.accent : 'transparent', borderWidth: 3 }]}
             >
               <Avatar id={avatar.id} size={56} />
             </Pressable>

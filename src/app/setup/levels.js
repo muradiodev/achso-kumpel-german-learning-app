@@ -1,4 +1,6 @@
-import { AppText } from '@/components/app-text';
+import { View } from 'react-native';
+
+import { Stepper } from '@/components/stepper';
 import { useI18n } from '@/i18n';
 import { LevelsForm } from '@/screens/levels-form';
 
@@ -9,9 +11,9 @@ export default function LevelsSetup() {
     <LevelsForm
       ctaLabel={t('setup.levelsCta')}
       header={
-        <AppText variant="caption" tone="accent" style={{ marginBottom: 8 }}>
-          {t('common.stepOf', { step: 3, total: 3 })}
-        </AppText>
+        <View style={{ marginBottom: 20 }}>
+          <Stepper step={3} back />
+        </View>
       }
     />
   );

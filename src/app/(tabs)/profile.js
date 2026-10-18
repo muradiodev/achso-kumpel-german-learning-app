@@ -4,7 +4,10 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/app-text';
 import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/button';
+import { BrandMark } from '@/components/brand-mark';
 import { Icon } from '@/components/icon';
+import { IconChip } from '@/components/icon-chip';
+import { ListGroup } from '@/components/list-group';
 import { ListRow } from '@/components/list-row';
 import { Screen } from '@/components/screen';
 import { Segmented } from '@/components/segmented';
@@ -24,16 +27,16 @@ export default function Profile() {
   const { user, logout } = useAuth();
   const { myWords } = useProgress();
   const p = user.profile;
-  const icon = (name) => <Icon name={name} size={22} color={colors.accent} weight="duotone" />;
+  const icon = (name) => <IconChip name={name} size={36} />;
   const heading = (title) => (
-    <AppText variant="caption" tone="faint" style={{ marginTop: space.xxl, marginBottom: space.xs }}>
+    <AppText variant="caption" tone="faint" style={{ marginTop: space.xl, marginBottom: space.sm }}>
       {title}
     </AppText>
   );
 
   return (
     <Screen>
-      <AppText variant="title">{t('profile.title')}</AppText>
+      <AppText variant="display">{t('profile.title')}</AppText>
 
       <View style={[styles.identity, { marginTop: space.xl }]}>
         <Pressable
@@ -42,6 +45,9 @@ export default function Profile() {
           accessibilityLabel={t('profile.editAvatar')}
         >
           <Avatar id={p.avatarId} size={72} />
+          <View style={[styles.pencil, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <Icon name="pencil" size={14} color={colors.text} />
+          </View>
         </Pressable>
         <View style={styles.flex}>
           <AppText variant="heading">{`${p.firstName} ${p.lastName}`}</AppText>
@@ -55,19 +61,21 @@ export default function Profile() {
       </View>
 
       {heading(t('settings.sectionLearning'))}
-      <ListRow left={icon('progress')} title={t('progress.title')} onPress={() => router.push('/progress')} />
-      <ListRow
-        left={icon('words')}
-        title={t('myWords.title')}
-        subtitle={t('myWords.count', { count: Object.keys(myWords).length })}
-        onPress={() => router.push('/my-words')}
-      />
-      <ListRow
-        left={icon('level')}
-        title={t('profile.levels')}
-        subtitle={p.levels.join(', ')}
-        onPress={() => router.push('/settings/levels')}
-      />
+      <ListGroup>
+        <ListRow left={icon('progress')} title={t('progress.title')} onPress={() => router.push('/progress')} />
+        <ListRow
+          left={icon('words')}
+          title={t('myWords.title')}
+          subtitle={t('myWords.count', { count: Object.keys(myWords).length })}
+          onPress={() => router.push('/my-words')}
+        />
+        <ListRow
+          left={icon('level')}
+          title={t('profile.levels')}
+          subtitle={p.levels.join(', ')}
+          onPress={() => router.push('/settings/levels')}
+        />
+      </ListGroup>
 
       {heading(t('settings.appearance'))}
       <Segmented
@@ -80,22 +88,27 @@ export default function Profile() {
       </AppText>
 
       {heading(t('settings.sectionAccount'))}
-      <ListRow
-        left={icon('profile')}
-        title={t('settings.account')}
-        subtitle={t('settings.accountSub')}
-        onPress={() => router.push('/settings/account')}
-      />
-      <ListRow left={icon('sparkle')} title={t('profile.editAvatar')} onPress={() => router.push('/settings/avatar')} />
-      <ListRow
-        left={icon('translate')}
-        title={t('settings.language')}
-        subtitle={t(`languages.${lang}`)}
-        onPress={() => router.push('/settings/language')}
-      />
+      <ListGroup>
+        <ListRow
+          left={icon('profile')}
+          title={t('settings.account')}
+          subtitle={t('settings.accountSub')}
+          onPress={() => router.push('/settings/account')}
+        />
+        <ListRow left={icon('sparkle')} title={t('profile.editAvatar')} onPress={() => router.push('/settings/avatar')} />
+        <ListRow
+          left={icon('translate')}
+          title={t('settings.language')}
+          subtitle={t(`languages.${lang}`)}
+          onPress={() => router.push('/settings/language')}
+        />
+      </ListGroup>
 
-      <Surface tone="muted" style={{ marginTop: space.xxl }}>
-        <AppText weight="600">{t('profile.about')}</AppText>
+      <Surface tone="muted" style={{ marginTop: space.xl }}>
+        <View style={styles.aboutHead}>
+          <BrandMark size={36} tile />
+          <AppText variant="heading">{t('profile.about')}</AppText>
+        </View>
         <AppText variant="small" tone="muted" style={{ marginTop: space.sm }}>
           {t('profile.aboutBody')}
         </AppText>
@@ -124,5 +137,17 @@ export default function Profile() {
 
 const styles = StyleSheet.create({
   identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
+  pencil: {
+    position: 'absolute',
+    right: -4,
+    bottom: -4,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  aboutHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   flex: { flex: 1, gap: 2 },
 });

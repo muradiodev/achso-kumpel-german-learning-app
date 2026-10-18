@@ -43,6 +43,14 @@ export const palette = {
     dangerSoft: '#FEE2E2',
     warning: '#A16207',
     warningSoft: '#FEF3C7',
+    // Decor and overlays on the purple gift card (2026 redesign).
+    giftOrnament: purple[500],
+    onBrandTrack: 'rgba(255,255,255,0.28)',
+    onBrandFill: 'rgba(255,255,255,0.16)',
+    onBrandRule: 'rgba(255,255,255,0.22)',
+    // Lower edge of word tiles, so they read as pressable keys.
+    tileLip: '#D9D4E5',
+    scrim: 'rgba(9,7,16,0.6)',
   },
   dark: {
     backdrop: '#07060B',
@@ -64,12 +72,19 @@ export const palette = {
     dangerSoft: '#3B1616',
     warning: '#FACC15',
     warningSoft: '#33290A',
+    giftOrnament: purple[300],
+    // The dark accent is light, so overlays on it use the deep onAccent ink.
+    onBrandTrack: 'rgba(22,10,51,0.22)',
+    onBrandFill: 'rgba(22,10,51,0.12)',
+    onBrandRule: 'rgba(22,10,51,0.18)',
+    tileLip: '#3A3448',
+    scrim: 'rgba(9,7,16,0.6)',
   },
 };
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32, xxxl: 48 };
 
-export const radius = { md: 14, lg: 20, pill: 999 };
+export const radius = { md: 14, lg: 20, xl: 24, sheet: 28, pill: 999 };
 
 // Plus Jakarta Sans, loaded in src/app/_layout.js. Each weight is its own
 // family on native, so text picks the family instead of fontWeight.

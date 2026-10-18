@@ -30,16 +30,19 @@ export function GiftReveal({ gift, onDone }) {
   }
 
   return (
-    <View style={[StyleSheet.absoluteFill, styles.scrim]}>
+    <View style={[StyleSheet.absoluteFill, styles.scrim, { backgroundColor: colors.scrim }]}>
       <Animated.View
         entering={reduced ? undefined : FadeIn.duration(200)}
-        style={[styles.sheet, { backgroundColor: colors.surface, borderRadius: radius.lg + 8, padding: space.xl }]}
+        style={[styles.sheet, { backgroundColor: colors.surface, borderRadius: radius.sheet, padding: space.xl }]}
       >
         {!open ? (
           <View style={styles.center}>
             <View style={[styles.giftIcon, { backgroundColor: colors.accentSoft }]}>
               <Icon name="gift" size={44} color={colors.accent} weight="duotone" />
             </View>
+            <AppText variant="caption" tone="accent" align="center">
+              {t('gifts.dayOf', { day: gift.journeyDay, goal: journeyGoal(gift.journeyDay) })}
+            </AppText>
             <AppText variant="title" align="center">
               {t('gifts.newTitle')}
             </AppText>
@@ -57,14 +60,14 @@ export function GiftReveal({ gift, onDone }) {
               <AppText variant="display" style={styles.flex}>
                 {gift.de}
               </AppText>
-              <SpeakButton text={gift.de} size={44} />
+              <SpeakButton text={gift.de} size={56} />
             </View>
             <AppText variant="heading" tone="accent">
               {tr(gift.tr, lang)}
             </AppText>
             <AppText>{pick(gift.note, lang)}</AppText>
             <JourneyPath day={gift.journeyDay} />
-            <AppText variant="small" tone="muted">
+            <AppText variant="small" tone="faint">
               {t('gifts.earned')}
             </AppText>
             <Button label={t('gifts.keep')} onPress={onDone} style={{ marginTop: space.sm }} />
@@ -76,7 +79,7 @@ export function GiftReveal({ gift, onDone }) {
 }
 
 const styles = StyleSheet.create({
-  scrim: { backgroundColor: 'rgba(9, 7, 16, 0.6)', justifyContent: 'center', padding: 20 },
+  scrim: { justifyContent: 'center', padding: 20 },
   sheet: { maxWidth: 520, width: '100%', alignSelf: 'center' },
   center: { alignItems: 'center', gap: 14 },
   giftIcon: {

@@ -117,6 +117,8 @@ const en = {
     dueCount: '{count} to review',
     newCount: '{count} new',
     allClear: 'Nothing due. A short session still keeps words active.',
+    dueLabel: 'to review',
+    newLabel: 'new',
     start: 'Start session',
     duration: 'About 10 minutes',
     weakTitle: 'Your weak spots',

@@ -57,7 +57,7 @@ export function AuthForm({ mode }) {
       }
     >
       <ScreenHeader />
-      <AppText variant="title">{t(isRegister ? 'auth.registerTitle' : 'auth.loginTitle')}</AppText>
+      <AppText variant="display">{t(isRegister ? 'auth.registerTitle' : 'auth.loginTitle')}</AppText>
       <AppText tone="muted" style={{ marginTop: space.sm }}>
         {t(isRegister ? 'auth.registerSub' : 'auth.loginSub')}
       </AppText>

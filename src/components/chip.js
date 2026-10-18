@@ -3,7 +3,8 @@ import { Pressable, StyleSheet } from 'react-native';
 import { AppText } from '@/components/app-text';
 import { useTheme } from '@/theme';
 
-export function Chip({ label, selected = false, onPress, accessibilityLabel }) {
+// tone 'soft' is a read-only tag on accentSoft (e.g. the level mix on Today).
+export function Chip({ label, selected = false, onPress, accessibilityLabel, tone }) {
   const { colors, radius } = useTheme();
   return (
     <Pressable
@@ -15,13 +16,13 @@ export function Chip({ label, selected = false, onPress, accessibilityLabel }) {
         styles.chip,
         {
           borderRadius: radius.pill,
-          backgroundColor: selected ? colors.accent : colors.surface,
-          borderColor: selected ? colors.accent : colors.border,
+          backgroundColor: tone === 'soft' ? colors.accentSoft : selected ? colors.accent : colors.surface,
+          borderColor: tone === 'soft' ? colors.accentSoft : selected ? colors.accent : colors.border,
           transform: [{ scale: pressed ? 0.97 : 1 }],
         },
       ]}
     >
-      <AppText variant="small" weight="600" tone={selected ? 'onAccent' : 'default'}>
+      <AppText variant="small" weight="600" tone={tone === 'soft' ? 'accent' : selected ? 'onAccent' : 'default'}>
         {label}
       </AppText>
     </Pressable>

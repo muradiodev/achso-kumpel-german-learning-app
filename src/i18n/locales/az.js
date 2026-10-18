@@ -116,6 +116,8 @@ const az = {
     dueCount: '{count} təkrar',
     newCount: '{count} yeni',
     allClear: 'Təkrar yoxdur. Qısa sessiya yenə də sözləri aktiv saxlayır.',
+    dueLabel: 'təkrar',
+    newLabel: 'yeni',
     start: 'Sessiyaya başla',
     duration: 'Təxminən 10 dəqiqə',
     weakTitle: 'Zəif yerlərin',

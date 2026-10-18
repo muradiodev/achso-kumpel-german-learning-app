@@ -40,6 +40,7 @@ export default function Grammar() {
     [group, grammar],
   );
   const learnedTotal = GRAMMAR_TOPICS.filter((topic) => grammar[topic.id] === 'learned').length;
+  const learningTotal = GRAMMAR_TOPICS.filter((topic) => grammar[topic.id] === 'learning').length;
 
   const toggle = useCallback(
     (id) => setSelected((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id])),
@@ -49,7 +50,9 @@ export default function Grammar() {
   const renderItem = useCallback(
     ({ item }) => {
       const status = grammar[item.id] ?? 'new';
-      const color = status === 'learned' ? colors.success : status === 'learning' ? colors.warning : colors.textFaint;
+      // Purple, not green: green only ever means a right answer. The three
+      // icon shapes (circle, half, check) carry the status without colour.
+      const color = status === 'new' ? colors.textFaint : colors.accent;
       const isSelected = selected.includes(item.id);
       return (
         <Pressable
@@ -91,7 +94,7 @@ export default function Grammar() {
     ({ section }) => (
       <View style={[styles.sectionHeader, { backgroundColor: colors.bg, paddingTop: space.xl }]}>
         <View style={styles.sectionTitle}>
-          <View style={[styles.levelBadge, { backgroundColor: colors.accent, borderRadius: radius.pill }]}>
+          <View style={[styles.levelBadge, { backgroundColor: colors.accent, borderRadius: 8 }]}>
             <AppText variant="caption" tone="onAccent">
               {t(`grammar.groupLevel.${section.key}`)}
             </AppText>
@@ -99,16 +102,21 @@ export default function Grammar() {
           <AppText variant="heading" style={styles.flex}>
             {t(`grammar.groups.${section.key}`)}
           </AppText>
-          <AppText variant="small" tone="muted">
+          <AppText variant="caption" tone="faint">
             {t('grammar.sectionCount', { learned: section.learned, total: section.data.length })}
           </AppText>
         </View>
         <View style={{ marginTop: space.sm }}>
-          <SegmentBar total={section.data.length} strong={section.learned} height={6} />
+          <SegmentBar
+            total={section.data.length}
+            strong={section.learned}
+            soft={section.data.filter((topic) => grammar[topic.id] === 'learning').length}
+            height={6}
+          />
         </View>
       </View>
     ),
-    [colors, radius, space, t],
+    [colors, space, t, grammar],
   );
 
   return (
@@ -129,13 +137,25 @@ export default function Grammar() {
         }}
         ListHeaderComponent={
           <View>
-            <AppText variant="title">{t('grammar.title')}</AppText>
-            <AppText tone="muted" style={{ marginTop: space.sm }}>
+            <AppText variant={selecting ? 'title' : 'display'}>
+              {selecting ? t('grammar.selectMode') : t('grammar.title')}
+            </AppText>
+            <AppText variant="small" tone="muted" style={{ marginTop: space.xs }}>
               {selecting ? t('grammar.selectHint') : t('grammar.sub')}
             </AppText>
-            <AppText variant="small" weight="600" tone="accent" style={{ marginTop: space.md }}>
-              {t('grammar.learnedCount', { learned: learnedTotal, total: GRAMMAR_TOPICS.length })}
-            </AppText>
+            {!selecting ? (
+              <View
+                style={[
+                  styles.summary,
+                  { backgroundColor: colors.surfaceAlt, borderRadius: radius.lg, marginTop: space.lg },
+                ]}
+              >
+                <AppText weight="700">
+                  {t('grammar.learnedCount', { learned: learnedTotal, total: GRAMMAR_TOPICS.length })}
+                </AppText>
+                <SegmentBar total={GRAMMAR_TOPICS.length} strong={learnedTotal} soft={learningTotal} />
+              </View>
+            ) : null}
             <View style={[styles.chips, { marginTop: space.lg }]}>
               <Chip label={t('common.all')} selected={group === 'all'} onPress={() => setGroup('all')} />
               {GRAMMAR_GROUPS.map((g) => (
@@ -192,6 +212,7 @@ export default function Grammar() {
 }
 
 const styles = StyleSheet.create({
+  summary: { padding: 16, gap: 10 },
   flex: { flex: 1 },
   flexWide: { flex: 2 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

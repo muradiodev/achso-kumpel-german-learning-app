@@ -4,6 +4,8 @@ import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
+import { Icon } from '@/components/icon';
+import { LevelTag } from '@/components/level-tag';
 import { Segmented } from '@/components/segmented';
 import { SpeakButton } from '@/components/speak-button';
 import { TappableText } from '@/components/tappable-text';
@@ -36,6 +38,8 @@ function ResultPanel({ tone, title, line, sentence, children }) {
     neutral: colors.surfaceAlt,
   }[tone];
   const fg = { right: 'success', wrong: 'danger', neutral: 'default' }[tone];
+  const icon = { right: 'checkCircle', wrong: 'warning', neutral: 'reveal' }[tone];
+  const iconColor = { right: colors.success, wrong: colors.danger, neutral: colors.textMuted }[tone];
   return (
     <View
       style={{
@@ -45,9 +49,12 @@ function ResultPanel({ tone, title, line, sentence, children }) {
         gap: space.sm,
       }}
     >
-      <AppText variant="heading" tone={fg}>
-        {title}
-      </AppText>
+      <View style={styles.head}>
+        <Icon name={icon} size={20} color={iconColor} weight={tone === 'neutral' ? 'regular' : 'fill'} />
+        <AppText variant="heading" tone={fg}>
+          {title}
+        </AppText>
+      </View>
       {line ? <AppText variant="small">{line}</AppText> : null}
       {sentence ? (
         <View style={styles.sentenceRow}>
@@ -107,6 +114,7 @@ function TilesFlow({ sentence, onAnswer }) {
 
   return (
     <View style={styles.flow}>
+      <View style={{ opacity: status === 'revealed' ? 0.55 : 1 }}>
       <TileBoard
         tiles={tiles}
         answer={answer}
@@ -115,6 +123,7 @@ function TilesFlow({ sentence, onAnswer }) {
         solved={status === 'right'}
         locked={status === 'right' || status === 'revealed'}
       />
+      </View>
       <View style={{ gap: space.md }}>
         {status === 'building' ? (
           <>
@@ -130,7 +139,6 @@ function TilesFlow({ sentence, onAnswer }) {
               <Button
                 label={t('practice.reveal')}
                 variant="secondary"
-                size="md"
                 onPress={() => {
                   setStatus('revealed');
                   speakGerman(sentence.de);
@@ -139,7 +147,6 @@ function TilesFlow({ sentence, onAnswer }) {
               />
               <Button
                 label={t('practice.tryAgain')}
-                size="md"
                 icon="repeat"
                 onPress={() => {
                   setStatus('building');
@@ -153,7 +160,7 @@ function TilesFlow({ sentence, onAnswer }) {
         {status === 'right' ? (
           <>
             <ResultPanel tone="right" title={t('practice.correct')} line={line} sentence={sentence} />
-            <Button label={t('common.continue')} onPress={() => onAnswer(gradeFor(attempts), true)} />
+            <Button label={t('common.continue')} icon="next" onPress={() => onAnswer(gradeFor(attempts), true)} />
           </>
         ) : null}
         {status === 'revealed' ? (
@@ -164,7 +171,7 @@ function TilesFlow({ sentence, onAnswer }) {
               sentence={sentence}
               line={t('practice.tapWordHint')}
             />
-            <Button label={t('common.continue')} onPress={() => onAnswer(RATING.AGAIN, false)} />
+            <Button label={t('common.continue')} icon="next" onPress={() => onAnswer(RATING.AGAIN, false)} />
           </>
         ) : null}
       </View>
@@ -233,13 +240,11 @@ function TypeFlow({ sentence, onAnswer }) {
               <Button
                 label={t('practice.reveal')}
                 variant="secondary"
-                size="md"
                 onPress={() => setStatus('revealed')}
                 style={styles.flex}
               />
               <Button
                 label={t('practice.tryAgain')}
-                size="md"
                 icon="repeat"
                 onPress={() => setStatus('building')}
                 style={styles.flex}
@@ -250,13 +255,13 @@ function TypeFlow({ sentence, onAnswer }) {
         {status === 'right' ? (
           <>
             <ResultPanel tone="right" title={t('practice.correct')} line={line} sentence={sentence} />
-            <Button label={t('common.continue')} onPress={() => onAnswer(gradeFor(attempts), true)} />
+            <Button label={t('common.continue')} icon="next" onPress={() => onAnswer(gradeFor(attempts), true)} />
           </>
         ) : null}
         {status === 'revealed' ? (
           <>
             <ResultPanel tone="neutral" title={t('practice.answerIs')} sentence={sentence} />
-            <Button label={t('common.continue')} onPress={() => onAnswer(RATING.AGAIN, false)} />
+            <Button label={t('common.continue')} icon="next" onPress={() => onAnswer(RATING.AGAIN, false)} />
           </>
         ) : null}
       </View>
@@ -266,7 +271,7 @@ function TypeFlow({ sentence, onAnswer }) {
 
 function SpeakFlow({ sentence, onAnswer }) {
   const { t } = useI18n();
-  const { space } = useTheme();
+  const { colors, radius, space } = useTheme();
   const [revealed, setRevealed] = useState(false);
 
   useEffect(() => {
@@ -276,12 +281,15 @@ function SpeakFlow({ sentence, onAnswer }) {
   return (
     <View style={styles.flow}>
       {revealed ? (
-        <View style={{ gap: space.md }}>
+        <View style={{ gap: space.sm, backgroundColor: colors.accentSoft, borderRadius: radius.lg, padding: space.lg }}>
+          <AppText variant="caption" tone="accent">
+            {t('practice.answerIs')}
+          </AppText>
           <View style={styles.sentenceRow}>
             <TappableText text={sentence.de} context={sentence} variant="title" style={styles.flex} />
-            <SpeakButton text={sentence.de} size={40} />
+            <SpeakButton text={sentence.de} size={44} ground={colors.surface} />
           </View>
-          <AppText variant="small" tone="faint">
+          <AppText variant="small" tone="muted">
             {t('practice.tapWordHint')}
           </AppText>
         </View>
@@ -313,14 +321,14 @@ export function SentenceCard({ item, onAnswer }) {
           value={mode}
           onChange={setMode}
           options={[
-            { value: 'tiles', label: t('practice.modeTiles') },
-            { value: 'keyboard', label: t('practice.modeKeyboard') },
-            { value: 'speak', label: t('practice.modeSpeak') },
+            { value: 'tiles', label: t('practice.modeTiles'), icon: 'modeTiles' },
+            { value: 'keyboard', label: t('practice.modeKeyboard'), icon: 'modeKeyboard' },
+            { value: 'speak', label: t('practice.modeSpeak'), icon: 'modeSpeak' },
           ]}
         />
-        <AppText variant="caption" tone="faint">
-          {`${sentence.level} · ${t('practice.modes.sentences.title')}`}
-        </AppText>
+        <View style={{ marginTop: space.sm }}>
+          <LevelTag level={sentence.level} label={t('practice.modes.sentences.title')} />
+        </View>
         <AppText variant="title">{tr(sentence.tr, lang)}</AppText>
       </View>
       <Flow key={mode} sentence={sentence} onAnswer={onAnswer} />
@@ -334,4 +342,5 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   row: { flexDirection: 'row', gap: 10, marginTop: 4 },
   sentenceRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  head: { flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

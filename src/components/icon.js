@@ -1,6 +1,7 @@
 // One icon family for the whole app: Phosphor. Screens use semantic names
 // ("listen", "weak"), never library names, so the set can change in one place.
 // Icons are imported file by file to keep the bundle small.
+import { ArrowRightIcon } from 'phosphor-react-native/src/icons/ArrowRight';
 import { ArrowsClockwiseIcon } from 'phosphor-react-native/src/icons/ArrowsClockwise';
 import { BicycleIcon } from 'phosphor-react-native/src/icons/Bicycle';
 import { BookOpenIcon } from 'phosphor-react-native/src/icons/BookOpen';
@@ -21,14 +22,18 @@ import { CircleIcon } from 'phosphor-react-native/src/icons/Circle';
 import { CircleHalfIcon } from 'phosphor-react-native/src/icons/CircleHalf';
 import { CodeIcon } from 'phosphor-react-native/src/icons/Code';
 import { CoffeeIcon } from 'phosphor-react-native/src/icons/Coffee';
+import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
+import { EyeIcon } from 'phosphor-react-native/src/icons/Eye';
 import { GiftIcon } from 'phosphor-react-native/src/icons/Gift';
 import { GitBranchIcon } from 'phosphor-react-native/src/icons/GitBranch';
 import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
 import { HeartbeatIcon } from 'phosphor-react-native/src/icons/Heartbeat';
+import { KeyboardIcon } from 'phosphor-react-native/src/icons/Keyboard';
 import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
 import { LightningIcon } from 'phosphor-react-native/src/icons/Lightning';
 import { ListChecksIcon } from 'phosphor-react-native/src/icons/ListChecks';
 import { LockSimpleIcon } from 'phosphor-react-native/src/icons/LockSimple';
+import { MicrophoneIcon } from 'phosphor-react-native/src/icons/Microphone';
 import { MinusIcon } from 'phosphor-react-native/src/icons/Minus';
 import { MusicNotesIcon } from 'phosphor-react-native/src/icons/MusicNotes';
 import { PawPrintIcon } from 'phosphor-react-native/src/icons/PawPrint';
@@ -94,6 +99,13 @@ const ICONS = {
   translate: TranslateIcon,
   gift: GiftIcon,
   lock: LockSimpleIcon,
+  next: ArrowRightIcon,
+  reveal: EyeIcon,
+  download: DownloadSimpleIcon,
+  // answer modes
+  modeTiles: CardsIcon,
+  modeKeyboard: KeyboardIcon,
+  modeSpeak: MicrophoneIcon,
   // avatars
   coffee: CoffeeIcon,
   code: CodeIcon,

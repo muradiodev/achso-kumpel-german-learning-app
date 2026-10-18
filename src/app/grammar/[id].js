@@ -4,6 +4,8 @@ import { StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { EmptyState } from '@/components/empty-state';
+import { Icon } from '@/components/icon';
+import { IconChip } from '@/components/icon-chip';
 import { Screen } from '@/components/screen';
 import { ScreenHeader } from '@/components/screen-header';
 import { Segmented } from '@/components/segmented';
@@ -53,7 +55,7 @@ export default function GrammarTopic() {
       }
     >
       <ScreenHeader title={topic.level} />
-      <AppText variant="title">{topic.title}</AppText>
+      <AppText variant="display">{topic.title}</AppText>
       <AppText tone="muted" style={{ marginTop: space.xs }}>
         {tr(topic.subtitle, lang)}
       </AppText>
@@ -62,11 +64,15 @@ export default function GrammarTopic() {
         <Segmented
           value={status}
           onChange={(value) => setGrammarStatus(topic.id, value)}
-          options={['new', 'learning', 'learned'].map((value) => ({ value, label: t(`grammar.status.${value}`) }))}
+          options={['new', 'learning', 'learned'].map((value) => ({
+            value,
+            label: t(`grammar.status.${value}`),
+            icon: { new: 'circle', learning: 'learning', learned: 'checkCircle' }[value],
+          }))}
         />
       </View>
 
-      <Surface tone="muted" style={{ marginTop: space.xl }}>
+      <Surface tone="accent" style={{ marginTop: space.xl }}>
         <AppText variant="caption" tone="accent">
           {t('grammar.inShort')}
         </AppText>
@@ -102,10 +108,19 @@ export default function GrammarTopic() {
       <View style={{ gap: space.md }}>
         {topic.mistakes.map((m) => (
           <Surface key={m.wrong}>
-            <AppText style={{ color: colors.danger, textDecorationLine: 'line-through' }}>{m.wrong}</AppText>
-            <AppText weight="600" style={{ color: colors.success, marginTop: space.xs }}>
-              {m.right}
-            </AppText>
+            {/* Red and green carry their meaning here: wrong and right. Icons repeat it. */}
+            <View style={styles.mistake}>
+              <Icon name="close" size={18} color={colors.danger} weight="bold" />
+              <AppText style={[styles.flex, { color: colors.danger, textDecorationLine: 'line-through' }]}>
+                {m.wrong}
+              </AppText>
+            </View>
+            <View style={[styles.mistake, { marginTop: space.xs }]}>
+              <Icon name="check" size={18} color={colors.success} weight="bold" />
+              <AppText weight="600" style={[styles.flex, { color: colors.success }]}>
+                {m.right}
+              </AppText>
+            </View>
             <AppText variant="small" tone="muted" style={{ marginTop: space.sm }}>
               {tr(m.why, lang)}
             </AppText>
@@ -116,9 +131,10 @@ export default function GrammarTopic() {
       {section(t('grammar.speak'))}
       <View style={{ gap: space.md }}>
         {topic.speak.map((prompt, i) => (
-          <AppText key={i} tone="muted">
-            {tr(prompt, lang)}
-          </AppText>
+          <Surface key={i} tone="muted" style={styles.speak}>
+            <IconChip name="chats" size={36} ground={colors.surface} />
+            <AppText style={styles.flex}>{tr(prompt, lang)}</AppText>
+          </Surface>
         ))}
       </View>
 
@@ -136,4 +152,6 @@ const styles = StyleSheet.create({
   bullet: { flexDirection: 'row', gap: 12 },
   dot: { width: 6, height: 6, borderRadius: 3, marginTop: 9 },
   example: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  mistake: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  speak: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
 });

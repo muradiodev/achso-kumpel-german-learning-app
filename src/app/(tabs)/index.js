@@ -4,11 +4,13 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Avatar } from '@/components/avatar';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Chip } from '@/components/chip';
 import { GiftReveal } from '@/components/gift-reveal';
 import { TodayGiftCard } from '@/components/gifts';
 import { Icon } from '@/components/icon';
+import { IconChip } from '@/components/icon-chip';
 import { ProgressRing } from '@/components/progress-charts';
 import { Screen } from '@/components/screen';
 import { Surface } from '@/components/surface';
@@ -28,7 +30,7 @@ const QUICK = [
 ];
 
 export default function Today() {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { colors, space, radius } = useTheme();
   const { user } = useAuth();
   const { srs, grammar, activity, reviewedToday } = useProgress();
@@ -40,14 +42,23 @@ export default function Today() {
   const share = stats.totals.total ? stats.totals.seen / stats.totals.total : 0;
   const { today: gift, nextUnlock, markSeen } = useDailyGift();
 
+  const dateLine = useMemo(() => {
+    try {
+      return new Intl.DateTimeFormat(lang, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+    } catch {
+      return null;
+    }
+  }, [lang]);
+  const newCount = Math.min(fresh, 8);
+
   return (
     <Screen overlay={gift && !gift.seen ? <GiftReveal gift={gift} onDone={markSeen} /> : null}>
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <AppText variant="title">{t('home.greeting', { name: firstName })}</AppText>
-          <AppText variant="small" tone="muted">
-            {t('home.reviewedToday', { count: reviewedToday })}
+          <AppText variant="caption" tone="faint">
+            {[dateLine, t('home.reviewedToday', { count: reviewedToday })].filter(Boolean).join(' · ')}
           </AppText>
+          <AppText variant="display">{t('home.greeting', { name: firstName })}</AppText>
         </View>
         <Pressable
           onPress={() => router.push('/profile')}
@@ -58,34 +69,46 @@ export default function Today() {
         </Pressable>
       </View>
 
-      <View style={{ marginTop: space.xl }}>
+      <View style={{ marginTop: space.lg }}>
         <TodayGiftCard gift={gift} nextUnlock={nextUnlock} />
       </View>
 
-      <Surface tone="accent" style={{ marginTop: space.lg, padding: space.xl }}>
-        <AppText variant="heading">{t('home.todayTitle')}</AppText>
-        <AppText tone="muted" style={{ marginTop: space.xs }}>
-          {due > 0
-            ? `${t('home.dueCount', { count: due })}, ${t('home.newCount', { count: Math.min(fresh, 8) })}`
-            : fresh > 0
-              ? t('home.newCount', { count: Math.min(fresh, 8) })
-              : t('home.allClear')}
-        </AppText>
-        <Button
-          label={t('home.start')}
-          icon="play"
-          onPress={() => router.push('/practice/mixed')}
-          style={{ marginTop: space.lg }}
-        />
-        <AppText variant="small" tone="muted" align="center" style={{ marginTop: space.sm }}>
-          {t('home.duration')}
-        </AppText>
+      <Surface style={{ marginTop: space.lg, padding: space.xl, gap: space.lg }}>
+        <View style={styles.titleRow}>
+          <AppText variant="heading" style={styles.flex}>
+            {t('home.todayTitle')}
+          </AppText>
+          <Badge label={t('home.duration')} tone="neutral" />
+        </View>
+        {due > 0 || newCount > 0 ? (
+          <View style={styles.counts}>
+            {due > 0 ? (
+              <View style={styles.flex}>
+                <AppText variant="title">{String(due)}</AppText>
+                <AppText variant="small" tone="muted">
+                  {t('home.dueLabel')}
+                </AppText>
+              </View>
+            ) : null}
+            {newCount > 0 ? (
+              <View style={styles.flex}>
+                <AppText variant="title">{String(newCount)}</AppText>
+                <AppText variant="small" tone="muted">
+                  {t('home.newLabel')}
+                </AppText>
+              </View>
+            ) : null}
+          </View>
+        ) : (
+          <AppText tone="muted">{t('home.allClear')}</AppText>
+        )}
+        <Button label={t('home.start')} icon="play" onPress={() => router.push('/practice/mixed')} />
       </Surface>
 
       <Surface style={{ marginTop: space.lg }} onPress={() => router.push('/progress')}>
-        <View style={styles.weakRow}>
+        <View style={styles.row}>
           <ProgressRing value={share} size={56} stroke={7}>
-            <AppText variant="caption" weight="700">{`${Math.round(share * 100)}%`}</AppText>
+            <AppText variant="caption" weight="800">{`${Math.round(share * 100)}%`}</AppText>
           </ProgressRing>
           <View style={styles.flex}>
             <AppText weight="600">{t('progress.cardTitle')}</AppText>
@@ -98,21 +121,26 @@ export default function Today() {
       </Surface>
 
       {weak > 0 ? (
-        <Surface style={{ marginTop: space.lg }} onPress={() => router.push('/practice/weak')}>
-          <View style={styles.weakRow}>
-            <Icon name="weak" size={22} color={colors.danger} />
+        <Surface style={{ marginTop: space.lg, gap: space.md }}>
+          <View style={styles.row}>
+            <IconChip name="weak" />
             <View style={styles.flex}>
-              <AppText weight="600">{t('home.weakTitle')}</AppText>
+              <AppText variant="heading">{t('home.weakTitle')}</AppText>
               <AppText variant="small" tone="muted">
                 {t('home.weakBody', { count: weak })}
               </AppText>
             </View>
-            <Icon name="forward" size={18} color={colors.textFaint} />
           </View>
+          <Button
+            label={t('home.weakCta')}
+            variant="secondary"
+            size="md"
+            onPress={() => router.push('/practice/weak')}
+          />
         </Surface>
       ) : null}
 
-      <AppText variant="heading" style={{ marginTop: space.xxl }}>
+      <AppText variant="heading" style={{ marginTop: space.xl }}>
         {t('home.quickTitle')}
       </AppText>
       <View style={[styles.quick, { marginTop: space.md }]}>
@@ -131,21 +159,21 @@ export default function Today() {
               },
             ]}
           >
-            <Icon name={item.icon} size={26} color={colors.accent} weight="duotone" />
-            <AppText weight="600" numberOfLines={1}>
+            <IconChip name={item.icon} size={36} />
+            <AppText weight="600" numberOfLines={2}>
               {item.key === 'verbs' ? t('practice.verbsTitle') : t(`practice.modes.${item.key}.title`)}
             </AppText>
           </Pressable>
         ))}
       </View>
 
-      <View style={[styles.mixHeader, { marginTop: space.xxl }]}>
+      <View style={[styles.mixHeader, { marginTop: space.xl }]}>
         <AppText variant="heading">{t('home.yourMix')}</AppText>
         <Button label={t('home.change')} variant="ghost" size="md" onPress={() => router.push('/settings/levels')} />
       </View>
       <View style={styles.chips}>
         {levels.map((level) => (
-          <Chip key={level} label={level} selected />
+          <Chip key={level} label={level} tone="soft" />
         ))}
       </View>
     </Screen>
@@ -154,11 +182,13 @@ export default function Today() {
 
 const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'center', gap: 16 },
-  headerText: { flex: 1, gap: 2 },
-  weakRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  headerText: { flex: 1, gap: 4 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  titleRow: { flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 },
+  counts: { flexDirection: 'row', gap: 8 },
   flex: { flex: 1 },
-  quick: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  quickItem: { flexBasis: '45%', flexGrow: 1, borderWidth: 1, padding: 16, gap: 10, minHeight: 92 },
+  quick: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },
+  quickItem: { flexBasis: '45%', flexGrow: 1, borderWidth: 1, padding: 16, gap: 12, minHeight: 104 },
   mixHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

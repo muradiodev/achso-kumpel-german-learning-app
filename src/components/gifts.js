@@ -47,7 +47,7 @@ export function JourneyPath({ day, light = false }) {
                     ? colors.onAccent
                     : colors.accent
                   : light
-                    ? 'rgba(255,255,255,0.28)'
+                    ? colors.onBrandTrack
                     : colors.surfaceAlt,
             },
           ]}
@@ -66,7 +66,18 @@ export function TodayGiftCard({ gift, nextUnlock }) {
   const goal = journeyGoal(gift.journeyDay);
 
   return (
-    <View style={[styles.card, { backgroundColor: colors.accent, borderRadius: radius.lg, padding: space.xl }]}>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: colors.accent, borderRadius: radius.xl, paddingHorizontal: space.xl - 4, paddingTop: space.xl - 4, paddingBottom: space.lg },
+      ]}
+    >
+      {/* Two soft "umlaut dots": depth inside the one purple, never behind text. */}
+      <View pointerEvents="none" style={[styles.orn, { backgroundColor: colors.giftOrnament, right: -44, top: -52 }]} />
+      <View
+        pointerEvents="none"
+        style={[styles.orn, { backgroundColor: colors.giftOrnament, right: 104, top: -88, opacity: 0.35 }]}
+      />
       <View style={styles.headRow}>
         <View style={styles.badge}>
           <Icon name="sparkle" size={16} color={colors.onAccent} weight="fill" />
@@ -83,7 +94,7 @@ export function TodayGiftCard({ gift, nextUnlock }) {
         <AppText variant="title" tone="onAccent" style={styles.flex}>
           {gift.de}
         </AppText>
-        <SpeakButton text={gift.de} size={38} />
+        <SpeakButton text={gift.de} size={44} onBrand />
       </View>
       <AppText tone="onAccent" style={[styles.soft, { marginTop: 2 }]}>
         {tr(gift.tr, lang)}
@@ -97,7 +108,7 @@ export function TodayGiftCard({ gift, nextUnlock }) {
       </View>
 
       <View
-        style={[styles.footer, { borderTopColor: 'rgba(255,255,255,0.22)', marginTop: space.lg, paddingTop: space.md }]}
+        style={[styles.footer, { borderTopColor: colors.onBrandRule, marginTop: space.lg, paddingTop: space.md }]}
       >
         <View style={styles.flex}>
           <AppText variant="caption" tone="onAccent" style={styles.soft}>
@@ -109,7 +120,7 @@ export function TodayGiftCard({ gift, nextUnlock }) {
           onPress={() => router.push('/gifts')}
           accessibilityRole="button"
           hitSlop={10}
-          style={[styles.seeAll, { backgroundColor: 'rgba(255,255,255,0.16)', borderRadius: radius.pill }]}
+          style={[styles.seeAll, { backgroundColor: colors.onBrandFill, borderRadius: radius.pill }]}
         >
           <AppText variant="small" weight="700" tone="onAccent">
             {t('gifts.seeAll')}
@@ -123,13 +134,14 @@ export function TodayGiftCard({ gift, nextUnlock }) {
 
 const styles = StyleSheet.create({
   card: { overflow: 'hidden' },
+  orn: { position: 'absolute', width: 132, height: 132, borderRadius: 66, opacity: 0.55 },
   flex: { flex: 1 },
   soft: { opacity: 0.82 },
   headRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   badge: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   phraseRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   footer: { flexDirection: 'row', alignItems: 'center', gap: 12, borderTopWidth: StyleSheet.hairlineWidth },
-  seeAll: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 14, paddingVertical: 8 },
+  seeAll: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 14, minHeight: 36 },
   path: { flexDirection: 'row', gap: 5 },
   dot: { flex: 1, height: 6, borderRadius: 3 },
 });

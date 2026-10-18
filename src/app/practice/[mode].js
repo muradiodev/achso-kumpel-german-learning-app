@@ -6,6 +6,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { EmptyState } from '@/components/empty-state';
+import { Icon } from '@/components/icon';
+import { ProgressRing } from '@/components/progress-charts';
 import { Screen } from '@/components/screen';
 import { pick, SESSION_END } from '@/data/motivation';
 import { useAuth } from '@/features/auth/auth-context';
@@ -95,21 +97,57 @@ export default function PracticeSession() {
   }
 
   if (index >= queue.length) {
+    const right = Math.max(0, stats.done - stats.again);
+    const share = stats.done ? right / stats.done : 0;
+    const endLine = pick(
+      SESSION_END[stats.again === 0 ? 'perfect' : stats.again / Math.max(1, stats.done) < 0.3 ? 'good' : 'rough'],
+      lang,
+    );
     return (
-      <Screen scroll={false}>
-        <EmptyState
-          icon="done"
-          title={t('practice.summaryTitle')}
-          body={`${t('practice.summaryBody', { count: stats.done, again: stats.again })}
-
-${pick(
-  SESSION_END[stats.again === 0 ? 'perfect' : stats.again / Math.max(1, stats.done) < 0.3 ? 'good' : 'rough'],
-  lang,
-)}`}
-        />
-        <View style={{ gap: space.sm }}>
-          <Button label={t('practice.again')} onPress={start} />
-          <Button label={t('practice.finish')} variant="ghost" onPress={() => router.back()} />
+      <Screen
+        footer={
+          <View style={{ gap: space.sm }}>
+            <Button label={t('practice.finish')} onPress={() => router.back()} />
+            <Button label={t('practice.again')} icon="repeat" variant="secondary" onPress={start} />
+          </View>
+        }
+        contentStyle={styles.summary}
+      >
+        <ProgressRing value={share} size={168} stroke={16}>
+          <AppText variant="display">{`${Math.round(share * 100)}%`}</AppText>
+          <AppText variant="small" tone="muted">
+            {t('progress.right')}
+          </AppText>
+        </ProgressRing>
+        <View style={{ gap: space.sm, alignItems: 'center' }}>
+          <AppText variant="display" align="center">
+            {t('practice.summaryTitle')}
+          </AppText>
+          <AppText tone="muted" align="center">
+            {t('practice.summaryBody', { count: stats.done, again: stats.again })}
+          </AppText>
+        </View>
+        <View style={styles.statRow}>
+          {[
+            [right, t('progress.right')],
+            [stats.again, t('progress.missed')],
+          ].map(([value, label]) => (
+            <View
+              key={label}
+              style={[styles.stat, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.lg }]}
+            >
+              <AppText variant="title">{String(value)}</AppText>
+              <AppText variant="small" tone="muted">
+                {label}
+              </AppText>
+            </View>
+          ))}
+        </View>
+        <View style={[styles.endLine, { backgroundColor: colors.accentSoft, borderRadius: radius.lg }]}>
+          <Icon name="sparkle" size={20} color={colors.accent} weight="fill" />
+          <AppText variant="small" style={styles.flex}>
+            {endLine}
+          </AppText>
         </View>
       </Screen>
     );
@@ -122,7 +160,23 @@ ${pick(
   return (
     <Screen contentStyle={styles.content}>
       <View style={styles.top}>
-        <View style={[styles.track, { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill }]}>
+        <Pressable
+          onPress={() => router.back()}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel={t('practice.quit')}
+          style={({ pressed }) => [
+            styles.close,
+            { backgroundColor: colors.surfaceAlt, transform: [{ scale: pressed ? 0.94 : 1 }] },
+          ]}
+        >
+          <Icon name="close" size={20} color={colors.text} />
+        </Pressable>
+        <View
+          accessibilityRole="progressbar"
+          accessibilityValue={{ min: 0, max: queue.length, now: index + 1 }}
+          style={[styles.track, { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill }]}
+        >
           <View
             style={[
               styles.fill,
@@ -130,14 +184,9 @@ ${pick(
             ]}
           />
         </View>
-        <AppText variant="small" tone="muted">
+        <AppText variant="caption" tone="muted">
           {t('practice.progress', { current: index + 1, total: queue.length })}
         </AppText>
-        <Pressable onPress={() => router.back()} hitSlop={10} accessibilityRole="button">
-          <AppText variant="small" weight="600" tone="accent">
-            {t('practice.quit')}
-          </AppText>
-        </Pressable>
       </View>
       <Card key={`${index}-${item.key}`} item={item} onAnswer={answer} />
     </Screen>
@@ -145,8 +194,14 @@ ${pick(
 }
 
 const styles = StyleSheet.create({
-  content: { gap: 28 },
+  content: { gap: 24 },
   top: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  track: { flex: 1, height: 6, overflow: 'hidden' },
-  fill: { height: 6 },
+  close: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  track: { flex: 1, height: 8, overflow: 'hidden' },
+  fill: { height: 8 },
+  flex: { flex: 1 },
+  summary: { alignItems: 'center', justifyContent: 'center', gap: 24 },
+  statRow: { flexDirection: 'row', gap: 12, alignSelf: 'stretch' },
+  stat: { flex: 1, borderWidth: 1, padding: 16, gap: 2 },
+  endLine: { flexDirection: 'row', alignItems: 'flex-start', gap: 10, padding: 16, alignSelf: 'stretch' },
 });
