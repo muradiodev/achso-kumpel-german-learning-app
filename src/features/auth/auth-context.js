@@ -1,9 +1,13 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-import { localAuthProvider } from './local-auth-provider';
+import { API_URL } from '@/lib/api';
 
-// Swap this line for a remote provider when a backend exists.
-const authProvider = localAuthProvider;
+import { localAuthProvider } from './local-auth-provider';
+import { remoteAuthProvider } from './remote-auth-provider';
+
+// Server accounts when the app is built with EXPO_PUBLIC_API_URL, otherwise
+// device-only accounts.
+const authProvider = API_URL ? remoteAuthProvider : localAuthProvider;
 
 const AuthContext = createContext(null);
 

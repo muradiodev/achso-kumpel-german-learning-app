@@ -24,8 +24,7 @@ export function parseBirthDate(value) {
 export function ageFrom(date, now = new Date()) {
   let age = now.getFullYear() - date.getFullYear();
   const beforeBirthday =
-    now.getMonth() < date.getMonth() ||
-    (now.getMonth() === date.getMonth() && now.getDate() < date.getDate());
+    now.getMonth() < date.getMonth() || (now.getMonth() === date.getMonth() && now.getDate() < date.getDate());
   if (beforeBirthday) age -= 1;
   return age;
 }

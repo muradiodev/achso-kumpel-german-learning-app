@@ -1,14 +1,18 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
+import { getJSON, setJSON } from '@/lib/storage';
+
+import az from './locales/az';
 import en from './locales/en';
 
 // UI languages. Add a locale file and list it here; `ready: false` shows it
 // as "coming soon" in the profile screen.
-const locales = { en };
+const locales = { en, az };
+const LANG_KEY = 'app:uiLang';
 
 export const UI_LANGUAGES = [
   { code: 'en', ready: true },
-  { code: 'az', ready: false },
+  { code: 'az', ready: true },
 ];
 
 function lookup(dict, key) {
@@ -20,9 +24,7 @@ export function translate(lang, key, params) {
   if (value === undefined) value = lookup(en, key);
   if (value === undefined) return key;
   if (params && typeof value === 'string') {
-    value = value.replace(/\{(\w+)\}/g, (match, name) =>
-      params[name] === undefined ? match : String(params[name]),
-    );
+    value = value.replace(/\{(\w+)\}/g, (match, name) => (params[name] === undefined ? match : String(params[name])));
   }
   return value;
 }
@@ -31,8 +33,16 @@ const I18nContext = createContext({ lang: 'en', setLang: () => {}, t: (key) => k
 
 export function I18nProvider({ children, initialLang = 'en' }) {
   const [lang, setLangState] = useState(locales[initialLang] ? initialLang : 'en');
+  useEffect(() => {
+    getJSON(LANG_KEY).then((saved) => {
+      if (saved && locales[saved]) setLangState(saved);
+    });
+  }, []);
+
   const setLang = useCallback((code) => {
-    if (locales[code]) setLangState(code);
+    if (!locales[code]) return;
+    setLangState(code);
+    setJSON(LANG_KEY, code);
   }, []);
   const t = useCallback((key, params) => translate(lang, key, params), [lang]);
   const value = useMemo(() => ({ lang, setLang, t }), [lang, setLang, t]);

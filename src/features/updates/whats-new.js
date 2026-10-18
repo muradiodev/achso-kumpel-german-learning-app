@@ -33,9 +33,7 @@ export function WhatsNew() {
         return;
       }
       setReleases(
-        CHANGELOG.filter(
-          (r) => compareVersions(r.version, seen) > 0 && compareVersions(r.version, APP_VERSION) <= 0,
-        ),
+        CHANGELOG.filter((r) => compareVersions(r.version, seen) > 0 && compareVersions(r.version, APP_VERSION) <= 0),
       );
     });
     return () => {
@@ -62,7 +60,10 @@ export function WhatsNew() {
         </AppText>
         <ScrollView style={{ marginTop: space.lg }} contentContainerStyle={{ gap: space.lg }}>
           {pendingNotes.map((note) => (
-            <View key={note.key} style={[styles.dataNote, { backgroundColor: colors.warningSoft, borderRadius: radius.md }]}>
+            <View
+              key={note.key}
+              style={[styles.dataNote, { backgroundColor: colors.warningSoft, borderRadius: radius.md }]}
+            >
               <AppText variant="small" weight="600">
                 {t(note.key, note.params)}
               </AppText>

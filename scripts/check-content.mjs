@@ -49,12 +49,18 @@ for (const s of SENTENCES) {
 const all = JSON.stringify({ WORDS, SENTENCES, GRAMMAR_TOPICS, VERBS, PREP_VERBS, WRITING_TASKS });
 if (/[–—]/.test(all)) errors.push('content contains an en or em dash; use a hyphen');
 
+const perTopic = Object.fromEntries(GRAMMAR_TOPICS.map((t) => [t.id, 0]));
+for (const s of SENTENCES) for (const g of s.grammar) if (g in perTopic) perTopic[g] += 1;
+const thin = Object.entries(perTopic)
+  .filter(([, n]) => n < 3)
+  .map(([id, n]) => `${id} (${n})`);
 const withoutSentences = GRAMMAR_TOPICS.filter((t) => !used.has(t.id)).map((t) => t.id);
 
 console.log(
   `words ${WORDS.length}, sentences ${SENTENCES.length}, grammar ${GRAMMAR_TOPICS.length}, verbs ${VERBS.length}, prep verbs ${PREP_VERBS.length}, writing ${WRITING_TASKS.length}`,
 );
-if (withoutSentences.length) console.log(`topics without practice sentences: ${withoutSentences.join(', ')}`);
+if (withoutSentences.length) errors.push(`topics without practice sentences: ${withoutSentences.join(', ')}`);
+if (thin.length) console.log(`topics with fewer than 3 sentences: ${thin.join(', ')}`);
 if (errors.length) {
   console.error(errors.join('\n'));
   process.exit(1);

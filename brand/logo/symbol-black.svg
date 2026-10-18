@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <title>AchsoKumpel</title>
+  
+  <path fill="none" stroke="#16131F" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" d="M66 214L128 82L190 214"/>
+  <path fill="none" stroke="#16131F" stroke-width="26" stroke-linecap="round" d="M92 168Q128 196 164 168"/>
+  <circle cx="96" cy="40" r="18" fill="#16131F"/>
+  <circle cx="160" cy="40" r="18" fill="#16131F"/>
+</svg>

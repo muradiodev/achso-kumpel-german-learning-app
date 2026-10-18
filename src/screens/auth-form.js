@@ -8,6 +8,7 @@ import { Screen } from '@/components/screen';
 import { ScreenHeader } from '@/components/screen-header';
 import { TextField } from '@/components/text-field';
 import { useAuth } from '@/features/auth/auth-context';
+import { API_URL } from '@/lib/api';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 import { isEmail, isPasswordValid } from '@/utils/validation';
@@ -95,7 +96,7 @@ export function AuthForm({ mode }) {
           </AppText>
         ) : null}
         <AppText variant="small" tone="faint">
-          {t('auth.localNote')}
+          {t(API_URL ? 'auth.syncNote' : 'auth.localNote')}
         </AppText>
       </View>
     </Screen>

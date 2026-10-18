@@ -1,18 +1,19 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { EmptyState } from '@/components/empty-state';
+import { Icon } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { ScreenHeader } from '@/components/screen-header';
 import { SpeakButton } from '@/components/speak-button';
 import { Surface } from '@/components/surface';
+import { TappableText } from '@/components/tappable-text';
 import { getWritingTask } from '@/data';
 import { ai } from '@/features/ai/ai-service';
-import { tr } from '@/i18n/content';
 import { useI18n } from '@/i18n';
+import { tr } from '@/i18n/content';
 import { useTheme } from '@/theme';
 
 export default function WritingTask() {
@@ -39,7 +40,9 @@ export default function WritingTask() {
 
   return (
     <Screen
-      footer={<Button label={t('writing.copyMode')} icon="pencil" onPress={() => router.push(`/writing/copy/${task.id}`)} />}
+      footer={
+        <Button label={t('writing.copyMode')} icon="pencil" onPress={() => router.push(`/writing/copy/${task.id}`)} />
+      }
     >
       <ScreenHeader title={`${t(`writing.filters.${task.type}`)} · ${task.level}`} />
       <AppText variant="title">{tr(task.title, lang)}</AppText>
@@ -54,7 +57,7 @@ export default function WritingTask() {
       <View style={{ gap: space.sm }}>
         {task.points.map((point, i) => (
           <View key={i} style={styles.point}>
-            <Ionicons name="checkbox-outline" size={20} color={colors.accent} />
+            <Icon name="checkbox" size={20} color={colors.accent} />
             <AppText style={styles.flex}>{tr(point, lang)}</AppText>
           </View>
         ))}
@@ -64,7 +67,7 @@ export default function WritingTask() {
       <Surface>
         <View style={{ gap: space.sm }}>
           {task.sample.map((line, i) => (
-            <AppText key={i}>{line}</AppText>
+            <TappableText key={i} text={line} />
           ))}
         </View>
       </Surface>
@@ -74,7 +77,7 @@ export default function WritingTask() {
         {task.phrases.map((p) => (
           <View key={p.de} style={styles.point}>
             <View style={styles.flex}>
-              <AppText weight="600">{p.de}</AppText>
+              <TappableText text={p.de} context={p} weight="600" />
               <AppText variant="small" tone="muted">
                 {tr(p.tr, lang)}
               </AppText>
@@ -86,7 +89,7 @@ export default function WritingTask() {
 
       <Surface tone="muted" style={{ marginTop: space.xxl }}>
         <View style={styles.point}>
-          <Ionicons name="camera-outline" size={22} color={colors.textMuted} />
+          <Icon name="camera" size={22} color={colors.textMuted} />
           <View style={styles.flex}>
             <AppText weight="600">{t('writing.aiFeedback')}</AppText>
             <AppText variant="small" tone="muted">

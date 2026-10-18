@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { Icon } from '@/components/icon';
 import { ListRow } from '@/components/list-row';
 import { Screen } from '@/components/screen';
 import { Surface } from '@/components/surface';
@@ -10,19 +10,19 @@ import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 
 const MODES = [
-  { key: 'sentences', icon: 'chatbubble-ellipses-outline' },
-  { key: 'words', icon: 'albums-outline' },
-  { key: 'cloze', icon: 'remove-outline' },
-  { key: 'work', icon: 'briefcase-outline' },
-  { key: 'everyday', icon: 'cafe-outline' },
-  { key: 'grammar', icon: 'checkbox-outline' },
-  { key: 'weak', icon: 'pulse-outline' },
+  { key: 'sentences', icon: 'sentences' },
+  { key: 'words', icon: 'words' },
+  { key: 'cloze', icon: 'cloze' },
+  { key: 'work', icon: 'work' },
+  { key: 'everyday', icon: 'everyday' },
+  { key: 'grammar', icon: 'grammarList' },
+  { key: 'weak', icon: 'weak' },
 ];
 
 export default function Practice() {
   const { t } = useI18n();
   const { colors, space } = useTheme();
-  const icon = (name) => <Ionicons name={name} size={22} color={colors.accent} />;
+  const icon = (name) => <Icon name={name} size={24} color={colors.accent} weight="duotone" />;
 
   return (
     <Screen>
@@ -51,7 +51,13 @@ export default function Practice() {
           />
         ))}
         <ListRow
-          left={icon('git-branch-outline')}
+          left={icon('words')}
+          title={t('myWords.title')}
+          subtitle={t('practice.modes.mine.body')}
+          onPress={() => router.push('/my-words')}
+        />
+        <ListRow
+          left={icon('verbs')}
           title={t('practice.verbsTitle')}
           subtitle={t('practice.verbsBody')}
           onPress={() => router.push('/verbs')}

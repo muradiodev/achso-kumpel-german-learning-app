@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { Icon } from '@/components/icon';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 
@@ -21,7 +21,7 @@ export function ScreenHeader({ title, right, onBack }) {
         accessibilityLabel={t('common.back')}
         style={[styles.back, { backgroundColor: colors.surfaceAlt }]}
       >
-        <Ionicons name="chevron-back" size={20} color={colors.text} />
+        <Icon name="back" size={20} color={colors.text} />
       </Pressable>
       <AppText variant="heading" numberOfLines={1} style={styles.title}>
         {title}

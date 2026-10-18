@@ -1,0 +1,29 @@
+# AchsoKumpel on the server (~/achsokumpel). deploy.sh uploads this file with
+# site/ and server/ next to it. Host nginx proxies the two domains to these ports.
+name: achsokumpel
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: web.Dockerfile
+    image: achsokumpel-web:latest
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:3030:80'
+
+  api:
+    build: ./server
+    image: achsokumpel-api:latest
+    restart: unless-stopped
+    environment:
+      ALLOWED_ORIGINS: https://achsokumpel.deviofy.com
+    ports:
+      - '127.0.0.1:4030:8787'
+    volumes:
+      - data:/data
+
+# Accounts and progress (SQLite). Survives deploys; only `docker volume rm` deletes it.
+volumes:
+  data:
+    name: achsokumpel-data

@@ -1,17 +1,17 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router/js-tabs';
 import { Platform } from 'react-native';
 
 import { useIsFramed } from '@/components/app-frame';
+import { Icon } from '@/components/icon';
 import { useI18n } from '@/i18n';
-import { useTheme } from '@/theme';
+import { fontFor, useTheme } from '@/theme';
 
 const ICONS = {
   index: 'today',
-  practice: 'flash',
-  grammar: 'checkbox',
-  writing: 'create',
-  profile: 'person-circle',
+  practice: 'practice',
+  grammar: 'grammar',
+  writing: 'writing',
+  profile: 'profile',
 };
 
 export default function TabsLayout() {
@@ -34,9 +34,10 @@ export default function TabsLayout() {
           Platform.OS === 'web' && { height: 64, paddingBottom: 8 },
           framed && { height: 68, paddingBottom: 12 },
         ],
+        tabBarLabelStyle: { fontFamily: fontFor('600'), fontSize: 11 },
         sceneStyle: { backgroundColor: colors.bg },
         tabBarIcon: ({ color, focused, size }) => (
-          <Ionicons name={focused ? ICONS[route.name] : `${ICONS[route.name]}-outline`} size={size} color={color} />
+          <Icon name={ICONS[route.name]} size={size} color={color} weight={focused ? 'fill' : 'regular'} />
         ),
       })}
     >

@@ -25,8 +25,7 @@ export function useUpdateCheck() {
         if (!res.ok) return;
         const remote = await res.json();
         if (!alive || !remote?.version) return;
-        const required =
-          remote.minSupportedVersion && compareVersions(APP_VERSION, remote.minSupportedVersion) < 0;
+        const required = remote.minSupportedVersion && compareVersions(APP_VERSION, remote.minSupportedVersion) < 0;
         const available = compareVersions(remote.version, APP_VERSION) > 0;
         setState({ status: required ? 'required' : available ? 'available' : 'current', remote });
       } catch {

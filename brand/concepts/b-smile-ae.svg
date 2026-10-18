@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- B: "Smile Ä" - an A whose crossbar is a smile, umlaut dots above: German, made friendly -->
+  <path fill="none" stroke="#000" stroke-width="34" stroke-linecap="round" stroke-linejoin="round" d="M62 218L128 80L194 218"/>
+  <path fill="none" stroke="#000" stroke-width="24" stroke-linecap="round" d="M90 168Q128 198 166 168"/>
+  <circle cx="96" cy="38" r="18" fill="#000"/>
+  <circle cx="160" cy="38" r="18" fill="#000"/>
+</svg>

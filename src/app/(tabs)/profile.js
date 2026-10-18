@@ -4,50 +4,43 @@ import { Linking, Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/app-text';
 import { Avatar } from '@/components/avatar';
 import { Button } from '@/components/button';
-import { Chip } from '@/components/chip';
+import { Icon } from '@/components/icon';
 import { ListRow } from '@/components/list-row';
 import { Screen } from '@/components/screen';
+import { Segmented } from '@/components/segmented';
 import { Surface } from '@/components/surface';
 import { useAuth } from '@/features/auth/auth-context';
+import { useProgress } from '@/features/progress/progress-context';
 import { APP_VERSION } from '@/features/updates/version';
-import { CONTENT_LANGUAGES } from '@/i18n/content';
-import { UI_LANGUAGES, useI18n } from '@/i18n';
-import { useTheme } from '@/theme';
+import { useI18n } from '@/i18n';
+import { useTheme, useThemeMode } from '@/theme';
 
-// Replace with the public repository URL once it exists.
-const REPO_URL = 'https://github.com/';
-
-function LanguageRow({ label, languages, current }) {
-  const { t } = useI18n();
-  const { space } = useTheme();
-  return (
-    <View style={{ gap: space.sm, paddingVertical: space.md }}>
-      <AppText weight="600">{label}</AppText>
-      <View style={styles.chips}>
-        {languages.map((l) => (
-          <Chip
-            key={l.code}
-            label={l.ready ? t(`languages.${l.code}`) : `${t(`languages.${l.code}`)} · ${t('common.comingSoon')}`}
-            selected={l.code === current}
-          />
-        ))}
-      </View>
-    </View>
-  );
-}
+const REPO_URL = 'https://github.com/muradiodev/achso-kumpel-german-learning-app';
 
 export default function Profile() {
   const { t, lang } = useI18n();
-  const { space } = useTheme();
+  const { colors, space } = useTheme();
+  const { mode, setMode } = useThemeMode();
   const { user, logout } = useAuth();
+  const { myWords } = useProgress();
   const p = user.profile;
+  const icon = (name) => <Icon name={name} size={22} color={colors.accent} weight="duotone" />;
+  const heading = (title) => (
+    <AppText variant="caption" tone="faint" style={{ marginTop: space.xxl, marginBottom: space.xs }}>
+      {title}
+    </AppText>
+  );
 
   return (
     <Screen>
       <AppText variant="title">{t('profile.title')}</AppText>
 
       <View style={[styles.identity, { marginTop: space.xl }]}>
-        <Pressable onPress={() => router.push('/settings/avatar')} accessibilityRole="button" accessibilityLabel={t('profile.editAvatar')}>
+        <Pressable
+          onPress={() => router.push('/settings/avatar')}
+          accessibilityRole="button"
+          accessibilityLabel={t('profile.editAvatar')}
+        >
           <Avatar id={p.avatarId} size={72} />
         </Pressable>
         <View style={styles.flex}>
@@ -61,14 +54,47 @@ export default function Profile() {
         </View>
       </View>
 
-      <View style={{ marginTop: space.xl }}>
-        <ListRow title={t('profile.levels')} subtitle={p.levels.join(', ')} onPress={() => router.push('/settings/levels')} />
-        <ListRow title={t('profile.editAvatar')} onPress={() => router.push('/settings/avatar')} />
-        <LanguageRow label={t('profile.appLanguage')} languages={UI_LANGUAGES} current={lang} />
-        <LanguageRow label={t('profile.translationLanguage')} languages={CONTENT_LANGUAGES} current="en" />
-      </View>
+      {heading(t('settings.sectionLearning'))}
+      <ListRow left={icon('progress')} title={t('progress.title')} onPress={() => router.push('/progress')} />
+      <ListRow
+        left={icon('words')}
+        title={t('myWords.title')}
+        subtitle={t('myWords.count', { count: Object.keys(myWords).length })}
+        onPress={() => router.push('/my-words')}
+      />
+      <ListRow
+        left={icon('level')}
+        title={t('profile.levels')}
+        subtitle={p.levels.join(', ')}
+        onPress={() => router.push('/settings/levels')}
+      />
 
-      <Surface tone="muted" style={{ marginTop: space.xl }}>
+      {heading(t('settings.appearance'))}
+      <Segmented
+        value={mode}
+        onChange={setMode}
+        options={['auto', 'light', 'dark'].map((value) => ({ value, label: t(`settings.theme.${value}`) }))}
+      />
+      <AppText variant="small" tone="faint" style={{ marginTop: space.sm }}>
+        {t('settings.themeHint')}
+      </AppText>
+
+      {heading(t('settings.sectionAccount'))}
+      <ListRow
+        left={icon('profile')}
+        title={t('settings.account')}
+        subtitle={t('settings.accountSub')}
+        onPress={() => router.push('/settings/account')}
+      />
+      <ListRow left={icon('sparkle')} title={t('profile.editAvatar')} onPress={() => router.push('/settings/avatar')} />
+      <ListRow
+        left={icon('translate')}
+        title={t('settings.language')}
+        subtitle={t(`languages.${lang}`)}
+        onPress={() => router.push('/settings/language')}
+      />
+
+      <Surface tone="muted" style={{ marginTop: space.xxl }}>
         <AppText weight="600">{t('profile.about')}</AppText>
         <AppText variant="small" tone="muted" style={{ marginTop: space.sm }}>
           {t('profile.aboutBody')}
@@ -82,7 +108,13 @@ export default function Profile() {
         />
       </Surface>
 
-      <Button label={t('profile.logout')} variant="danger" onPress={logout} style={{ marginTop: space.xl }} />
+      <Button
+        label={t('profile.logout')}
+        icon="signOut"
+        variant="danger"
+        onPress={logout}
+        style={{ marginTop: space.xl }}
+      />
       <AppText variant="small" tone="faint" align="center" style={{ marginTop: space.lg }}>
         {t('updates.version', { version: APP_VERSION })}
       </AppText>
@@ -93,5 +125,4 @@ export default function Profile() {
 const styles = StyleSheet.create({
   identity: { flexDirection: 'row', alignItems: 'center', gap: 16 },
   flex: { flex: 1, gap: 2 },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
 });

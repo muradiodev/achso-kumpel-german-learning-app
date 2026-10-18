@@ -1,0 +1,10 @@
+{
+  "name": "AchsoKumpel",
+  "short_name": "AchsoKumpel",
+  "description": "Practise real German sentences for work and daily life.",
+  "start_url": "/app/",
+  "display": "standalone",
+  "background_color": "#FAF9FC",
+  "theme_color": "#6E3BE0",
+  "icons": [{ "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png" }]
+}

@@ -30,10 +30,7 @@ export default function Verbs() {
   const insets = useSafeAreaInsets();
   const [section, setSection] = useState('irregular');
 
-  const data = useMemo(
-    () => (section === 'prep' ? PREP_VERBS : VERBS.filter(FILTERS[section])),
-    [section],
-  );
+  const data = useMemo(() => (section === 'prep' ? PREP_VERBS : VERBS.filter(FILTERS[section])), [section]);
 
   const renderVerb = useCallback(
     ({ item }) => (
@@ -82,12 +79,24 @@ export default function Verbs() {
       keyExtractor={(item) => item.id}
       renderItem={section === 'prep' ? renderPrep : renderVerb}
       style={{ backgroundColor: colors.bg }}
-      contentContainerStyle={{ width: '100%', maxWidth: MAX_WIDTH, alignSelf: 'center', paddingHorizontal: space.xl, paddingTop: insets.top + space.lg, paddingBottom: insets.bottom + space.xxl }}
+      contentContainerStyle={{
+        width: '100%',
+        maxWidth: MAX_WIDTH,
+        alignSelf: 'center',
+        paddingHorizontal: space.xl,
+        paddingTop: insets.top + space.lg,
+        paddingBottom: insets.bottom + space.xxl,
+      }}
       ListHeaderComponent={
         <View style={{ marginBottom: space.md }}>
           <ScreenHeader title={t('verbs.title')} />
           <View style={styles.quizRow}>
-            <Button label={t('verbs.quizAux')} size="md" onPress={() => router.push('/practice/aux')} style={styles.flex} />
+            <Button
+              label={t('verbs.quizAux')}
+              size="md"
+              onPress={() => router.push('/practice/aux')}
+              style={styles.flex}
+            />
             <Button
               label={t('verbs.quizForms')}
               size="md"
@@ -96,7 +105,12 @@ export default function Verbs() {
               style={styles.flex}
             />
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.chips} style={{ marginTop: space.lg }}>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.chips}
+            style={{ marginTop: space.lg }}
+          >
             {SECTIONS.map((s) => (
               <Chip key={s} label={t(`verbs.sections.${s}`)} selected={section === s} onPress={() => setSection(s)} />
             ))}
@@ -116,5 +130,11 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   quizRow: { flexDirection: 'row', gap: 10 },
   chips: { gap: 8 },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, borderBottomWidth: StyleSheet.hairlineWidth },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
 });

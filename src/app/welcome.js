@@ -1,14 +1,15 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { BrandMark } from '@/components/brand-mark';
 import { Button } from '@/components/button';
+import { Icon } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 
-const REASON_ICONS = ['chatbubbles-outline', 'repeat-outline', 'checkmark-done-outline'];
+const REASON_ICONS = ['chats', 'repeat', 'done'];
 
 export default function Welcome() {
   const { t } = useI18n();
@@ -25,11 +26,7 @@ export default function Welcome() {
       }
     >
       <View style={styles.brand}>
-        <View style={[styles.mark, { backgroundColor: colors.accent }]}>
-          <AppText variant="heading" tone="onAccent" weight="800">
-            A
-          </AppText>
-        </View>
+        <BrandMark size={48} tile />
         <View>
           <AppText weight="700">{t('brand.name')}</AppText>
           <AppText variant="small" tone="muted">
@@ -49,7 +46,7 @@ export default function Welcome() {
         {reasons.map((reason, index) => (
           <View key={reason.title} style={styles.reason}>
             <View style={[styles.reasonIcon, { backgroundColor: colors.accentSoft }]}>
-              <Ionicons name={REASON_ICONS[index]} size={20} color={colors.accent} />
+              <Icon name={REASON_ICONS[index]} size={20} color={colors.accent} />
             </View>
             <View style={styles.reasonBody}>
               <AppText weight="600">{reason.title}</AppText>
@@ -70,7 +67,6 @@ export default function Welcome() {
 
 const styles = StyleSheet.create({
   brand: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  mark: { width: 44, height: 44, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   reason: { flexDirection: 'row', gap: 16 },
   reasonIcon: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
   reasonBody: { flex: 1, gap: 4 },

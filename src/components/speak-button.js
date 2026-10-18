@@ -1,6 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 
+import { Icon } from '@/components/icon';
 import { speakGerman } from '@/features/speech/tts';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
@@ -24,7 +24,7 @@ export function SpeakButton({ text, size = 36 }) {
         transform: [{ scale: pressed ? 0.94 : 1 }],
       })}
     >
-      <Ionicons name="volume-medium" size={size * 0.5} color={colors.accent} />
+      <Icon name="listen" size={size * 0.5} color={colors.accent} />
     </Pressable>
   );
 }

@@ -3,7 +3,7 @@
     "name": "AchsoKumpel",
     "slug": "achso-kumpel",
     "scheme": "achsokumpel",
-    "version": "0.2.0",
+    "version": "0.5.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -14,7 +14,7 @@
     "android": {
       "package": "io.achsokumpel.app",
       "adaptiveIcon": {
-        "backgroundColor": "#FAFAFA",
+        "backgroundColor": "#6E3BE0",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -27,18 +27,34 @@
       "shortName": "AchsoKumpel",
       "description": "Dein Kumpel fürs Deutschlernen. Free practice app for real German at work and in daily life.",
       "lang": "en",
-      "themeColor": "#C2410C",
-      "backgroundColor": "#FAFAFA",
+      "themeColor": "#6E3BE0",
+      "backgroundColor": "#FAF9FC",
       "display": "standalone",
       "orientation": "portrait"
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#FAF9FC",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#0E0C14"
+          }
+        }
+      ]
     ],
     "extra": {
       "minSupportedVersion": "0.1.0",
       "apkUrl": ""
+    },
+    "experiments": {
+      "baseUrl": "/app"
     }
   }
 }

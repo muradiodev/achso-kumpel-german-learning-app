@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- A: "Speech ä" - single-storey a whose stem flicks out like a speech-bubble tail, umlaut on top -->
+  <path fill="#000" fill-rule="evenodd" d="M110 84a66 66 0 1 0 0.01 0zM110 116a34 34 0 1 1 -0.01 0z"/>
+  <path fill="none" stroke="#000" stroke-width="32" stroke-linecap="round" d="M176 98V188Q176 216 208 216"/>
+  <circle cx="92" cy="44" r="18" fill="#000"/>
+  <circle cx="148" cy="44" r="18" fill="#000"/>
+</svg>

@@ -7,6 +7,7 @@ import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { EmptyState } from '@/components/empty-state';
 import { Screen } from '@/components/screen';
+import { pick, SESSION_END } from '@/data/motivation';
 import { useAuth } from '@/features/auth/auth-context';
 import { buildSession } from '@/features/practice/session-builder';
 import { useProgress } from '@/features/progress/progress-context';
@@ -17,8 +18,9 @@ import { CARD_BY_KIND } from '@/screens/practice/cards';
 import { useTheme } from '@/theme';
 
 export default function PracticeSession() {
-  const { mode = 'mixed', topic } = useLocalSearchParams();
-  const { t } = useI18n();
+  const { mode = 'mixed', topics: topicsParam } = useLocalSearchParams();
+  const topics = topicsParam ? String(topicsParam).split(',') : undefined;
+  const { t, lang } = useI18n();
   const { colors, space, radius } = useTheme();
   const { user } = useAuth();
   const progress = useProgress();
@@ -34,13 +36,18 @@ export default function PracticeSession() {
     setQueue(
       buildSession({
         mode,
-        topic,
+        topics,
         levels: user.profile.levels,
         srs: progress.srs,
         grammarStatus: progress.grammar,
+        myWords: progress.myWords,
+        // A chosen topic set or word list may be larger than a normal session.
+        size: topics || mode === 'mine' ? 20 : 15,
+        newLimit: topics || mode === 'mine' ? 20 : 8,
       }),
     );
-  }, [mode, topic, user.profile.levels, progress.srs, progress.grammar]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, topicsParam, user.profile.levels, progress.srs, progress.grammar, progress.myWords]);
 
   // Build once, after progress has loaded. Later SRS updates must not reshuffle
   // the running session, so `start` is deliberately not a dependency.
@@ -91,9 +98,14 @@ export default function PracticeSession() {
     return (
       <Screen scroll={false}>
         <EmptyState
-          icon="checkmark-done"
+          icon="done"
           title={t('practice.summaryTitle')}
-          body={t('practice.summaryBody', { count: stats.done, again: stats.again })}
+          body={`${t('practice.summaryBody', { count: stats.done, again: stats.again })}
+
+${pick(
+  SESSION_END[stats.again === 0 ? 'perfect' : stats.again / Math.max(1, stats.done) < 0.3 ? 'good' : 'rough'],
+  lang,
+)}`}
         />
         <View style={{ gap: space.sm }}>
           <Button label={t('practice.again')} onPress={start} />
@@ -111,7 +123,12 @@ export default function PracticeSession() {
     <Screen contentStyle={styles.content}>
       <View style={styles.top}>
         <View style={[styles.track, { backgroundColor: colors.surfaceAlt, borderRadius: radius.pill }]}>
-          <View style={[styles.fill, { width: `${ratio * 100}%`, backgroundColor: colors.accent, borderRadius: radius.pill }]} />
+          <View
+            style={[
+              styles.fill,
+              { width: `${ratio * 100}%`, backgroundColor: colors.accent, borderRadius: radius.pill },
+            ]}
+          />
         </View>
         <AppText variant="small" tone="muted">
           {t('practice.progress', { current: index + 1, total: queue.length })}

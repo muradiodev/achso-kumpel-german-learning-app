@@ -1,4 +1,4 @@
-import { SENTENCES, VERBS, WORDS } from '@/data';
+import { GRAMMAR_TOPICS, SENTENCES, VERBS, WORDS } from '@/data';
 
 // Saved progress carries a `schema` number. When a release changes the shape
 // of progress data, bump PROGRESS_SCHEMA and add a step to MIGRATIONS that
@@ -25,7 +25,7 @@ function knownItemKeys() {
 }
 
 export function migrateProgress(raw) {
-  let data = { srs: {}, grammar: {}, writing: {}, activity: {}, ...raw };
+  let data = { srs: {}, grammar: {}, writing: {}, activity: {}, myWords: {}, grammarUse: {}, gifts: {}, ...raw };
   let schema = data.schema ?? 1;
   const notes = [];
 
@@ -47,12 +47,28 @@ export function migrateProgress(raw) {
 
   // Content that was removed in a release leaves orphaned review entries.
   const known = knownItemKeys();
+  // Personal words have their own review entries.
+  for (const id of Object.keys(data.myWords)) known.add(`myword|${id}`);
   const orphaned = Object.keys(data.srs).filter((key) => !known.has(key));
   if (orphaned.length) {
     const srs = { ...data.srs };
     for (const key of orphaned) delete srs[key];
     data = { ...data, srs };
     notes.push({ key: 'updates.retired', params: { count: orphaned.length } });
+  }
+
+  // Grammar topics that were merged or renamed in a release.
+  const topicIds = new Set(GRAMMAR_TOPICS.map((t) => t.id));
+  const staleTopics = Object.keys(data.grammar).filter((id) => !topicIds.has(id));
+  if (staleTopics.length) {
+    const grammar = { ...data.grammar };
+    const grammarUse = { ...data.grammarUse };
+    for (const id of staleTopics) {
+      delete grammar[id];
+      delete grammarUse[id];
+    }
+    data = { ...data, grammar, grammarUse };
+    notes.push({ key: 'updates.grammarRetired', params: { count: staleTopics.length } });
   }
 
   return { data: { ...data, schema: PROGRESS_SCHEMA }, notes, readOnly: false };

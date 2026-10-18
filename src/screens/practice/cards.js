@@ -1,28 +1,36 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { SpeakButton } from '@/components/speak-button';
+import { TappableText } from '@/components/tappable-text';
 import { TextField } from '@/components/text-field';
-import { isSameAnswer, wordOverlap } from '@/features/practice/answer-check';
+import { isSameAnswer } from '@/features/practice/answer-check';
 import { speakGerman } from '@/features/speech/tts';
+import { ENTRY_BY_ID } from '@/features/words/lookup';
 import { RATING } from '@/features/srs/scheduler';
 import { tr } from '@/i18n/content';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 
 import { RatingBar } from './rating-bar';
+import { SentenceCard } from './sentence-card';
 
 // Every card gets { item, onAnswer(rating, correct?) } and owns its own reveal
 // state. The session keys each card, so state resets between items.
 
-function GermanLine({ text, variant = 'title' }) {
+// German text with a listen button. Every word can be tapped to save it.
+function GermanLine({ text, variant = 'title', context, tappable = true }) {
   return (
     <View style={styles.germanLine}>
-      <AppText variant={variant} style={styles.flex}>
-        {text}
-      </AppText>
+      {tappable ? (
+        <TappableText text={text} context={context} variant={variant} style={styles.flex} />
+      ) : (
+        <AppText variant={variant} style={styles.flex}>
+          {text}
+        </AppText>
+      )}
       <SpeakButton text={text} size={40} />
     </View>
   );
@@ -74,7 +82,7 @@ export function WordCard({ item, onAnswer }) {
           {word.level}
         </AppText>
         {direction === 'de-en' ? (
-          <GermanLine text={word.de} variant="display" />
+          <GermanLine text={word.de} variant="display" tappable={false} />
         ) : (
           <AppText variant="display">{meaning}</AppText>
         )}
@@ -88,14 +96,12 @@ export function WordCard({ item, onAnswer }) {
             ) : (
               <GermanLine text={word.de} />
             )}
-            {word.plural ? (
-              <AppText tone="muted">{`Plural: ${word.plural}`}</AppText>
-            ) : null}
+            {word.plural ? <AppText tone="muted">{`Plural: ${word.plural}`}</AppText> : null}
             <View style={{ gap: space.xs }}>
               <AppText variant="caption" tone="faint">
                 {t('practice.exampleLabel')}
               </AppText>
-              <GermanLine text={word.example.de} variant="body" />
+              <GermanLine text={word.example.de} variant="body" context={word.example} />
               <AppText variant="small" tone="muted">
                 {tr(word.example.tr, lang)}
               </AppText>
@@ -107,62 +113,11 @@ export function WordCard({ item, onAnswer }) {
           </AppText>
         )}
       </Pressable>
-      {revealed ? <RatingBar onRate={onAnswer} /> : <Button label={t('practice.reveal')} onPress={() => setRevealed(true)} />}
-    </View>
-  );
-}
-
-export function RecallCard({ item, onAnswer }) {
-  const { t, lang } = useI18n();
-  const { space } = useTheme();
-  const sentence = item.ref;
-  const [typed, setTyped] = useState('');
-  const [revealed, setRevealed] = useState(false);
-
-  useEffect(() => {
-    if (revealed) speakGerman(sentence.de);
-  }, [revealed, sentence.de]);
-
-  const exact = typed.trim() && isSameAnswer(typed, sentence.de);
-  const overlap = typed.trim() ? wordOverlap(typed, sentence.de) : null;
-
-  return (
-    <View style={styles.card}>
-      <View style={styles.prompt}>
-        <AppText variant="caption" tone="faint">
-          {`${sentence.level} · ${t('practice.modes.sentences.title')}`}
-        </AppText>
-        <AppText variant="title">{tr(sentence.tr, lang)}</AppText>
-        {!revealed ? (
-          <View style={{ gap: space.md, marginTop: space.lg }}>
-            <AppText variant="small" tone="muted">
-              {t('practice.sayOrType')}
-            </AppText>
-            <TextField
-              label={t('practice.typeHere')}
-              value={typed}
-              onChangeText={setTyped}
-              autoCapitalize="sentences"
-              autoCorrect={false}
-              multiline
-            />
-          </View>
-        ) : (
-          <View style={{ gap: space.lg, marginTop: space.lg }}>
-            <GermanLine text={sentence.de} />
-            {typed.trim() ? (
-              exact ? (
-                <Feedback correct />
-              ) : (
-                <AppText variant="small" tone="muted">
-                  {`${t('practice.yourAnswer')}: ${typed}  (${Math.round(overlap * 100)}%)`}
-                </AppText>
-              )
-            ) : null}
-          </View>
-        )}
-      </View>
-      {revealed ? <RatingBar onRate={onAnswer} /> : <Button label={t('practice.reveal')} onPress={() => setRevealed(true)} />}
+      {revealed ? (
+        <RatingBar onRate={onAnswer} />
+      ) : (
+        <Button label={t('practice.reveal')} onPress={() => setRevealed(true)} />
+      )}
     </View>
   );
 }
@@ -174,7 +129,7 @@ function splitCloze(text, word) {
   return [text.slice(0, start), text.slice(start + word.length)];
 }
 
-function CheckCard({ title, prompt, hint, expected, inputLabel, onAnswer, speakText }) {
+function CheckCard({ title, prompt, hint, expected, inputLabel, onAnswer, speakText, context }) {
   const { t } = useI18n();
   const { space } = useTheme();
   const [typed, setTyped] = useState('');
@@ -213,7 +168,7 @@ function CheckCard({ title, prompt, hint, expected, inputLabel, onAnswer, speakT
           ) : (
             <>
               <Feedback correct={result} expected={expected} given={typed} />
-              {speakText ? <GermanLine text={speakText} variant="heading" /> : null}
+              {speakText ? <GermanLine text={speakText} variant="heading" context={context} /> : null}
             </>
           )}
         </View>
@@ -239,6 +194,7 @@ export function ClozeCard({ item, onAnswer }) {
       expected={sentence.cloze}
       inputLabel={t('practice.typeWord')}
       speakText={sentence.de}
+      context={sentence}
       onAnswer={onAnswer}
     />
   );
@@ -306,9 +262,54 @@ export function AuxCard({ item, onAnswer }) {
   );
 }
 
+// A word the learner saved. Without a dictionary entry the card shows the
+// sentence it was found in as the "answer".
+export function MyWordCard({ item, onAnswer }) {
+  const { t, lang } = useI18n();
+  const { space } = useTheme();
+  const word = item.ref;
+  const entry = ENTRY_BY_ID.get(word.id);
+  const [revealed, setRevealed] = useState(false);
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.prompt}>
+        <AppText variant="caption" tone="faint">
+          {t('myWords.title')}
+        </AppText>
+        <GermanLine text={word.de} variant="display" tappable={false} />
+        {revealed && entry ? (
+          <AppText variant="title" tone="accent">
+            {tr(entry.tr, lang)}
+          </AppText>
+        ) : null}
+        {revealed && word.context ? (
+          <View style={{ gap: space.xs, marginTop: space.lg }}>
+            <AppText variant="caption" tone="faint">
+              {t('myWords.foundIn')}
+            </AppText>
+            <GermanLine text={word.context.de} variant="body" context={word.context} />
+            {word.context.tr ? (
+              <AppText variant="small" tone="muted">
+                {tr(word.context.tr, lang)}
+              </AppText>
+            ) : null}
+          </View>
+        ) : null}
+      </View>
+      {revealed ? (
+        <RatingBar onRate={onAnswer} />
+      ) : (
+        <Button label={t('practice.reveal')} onPress={() => setRevealed(true)} />
+      )}
+    </View>
+  );
+}
+
 export const CARD_BY_KIND = {
+  myword: MyWordCard,
   word: WordCard,
-  recall: RecallCard,
+  recall: SentenceCard,
   cloze: ClozeCard,
   aux: AuxCard,
   forms: FormsCard,
@@ -320,4 +321,5 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   germanLine: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   choiceRow: { flexDirection: 'row', gap: 12 },
+  start: { alignSelf: 'flex-start', paddingHorizontal: 0 },
 });

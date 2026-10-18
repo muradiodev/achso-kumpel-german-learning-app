@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useKeepAwake } from 'expo-keep-awake';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
@@ -6,6 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
+import { Icon } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { ScreenHeader } from '@/components/screen-header';
 import { Segmented } from '@/components/segmented';
@@ -49,7 +49,7 @@ export default function CopyMode() {
       hitSlop={6}
       style={[styles.sizeButton, { backgroundColor: colors.surfaceAlt }]}
     >
-      <Ionicons name={icon} size={18} color={colors.text} />
+      <Icon name={icon} size={18} color={colors.text} />
     </Pressable>
   );
 
@@ -68,7 +68,7 @@ export default function CopyMode() {
             <Button label={t('writing.nextSentence')} onPress={() => setIndex((i) => i + 1)} style={styles.flex} />
           </View>
         ) : (
-          <Button label={t('writing.finished')} icon="checkmark" onPress={finish} />
+          <Button label={t('writing.finished')} icon="check" onPress={finish} />
         )
       }
     >
@@ -76,13 +76,13 @@ export default function CopyMode() {
         title={t('writing.copyTitle')}
         right={
           <View style={styles.sizeRow}>
-            {sizeButton(-1, 'remove')}
-            {sizeButton(1, 'add')}
+            {sizeButton(-1, 'minus')}
+            {sizeButton(1, 'plus')}
           </View>
         }
       />
       <View style={[styles.awake, { backgroundColor: colors.accentSoft, borderRadius: radius.pill }]}>
-        <Ionicons name="sunny-outline" size={14} color={colors.accent} />
+        <Icon name="sun" size={14} color={colors.accent} />
         <AppText variant="caption" tone="accent">
           {t('writing.screenOn')}
         </AppText>
@@ -104,8 +104,15 @@ export default function CopyMode() {
           <AppText variant="small" tone="muted">
             {t('practice.progress', { current: index + 1, total: lines.length })}
           </AppText>
-          <AppText style={{ fontSize, lineHeight: fontSize * 1.45, fontWeight: '500' }}>{lines[index]}</AppText>
-          <Button label={t('common.listen')} icon="volume-medium" variant="ghost" onPress={() => speakGerman(lines[index], { rate: 0.85 })} />
+          <AppText weight="500" style={{ fontSize, lineHeight: fontSize * 1.45 }}>
+            {lines[index]}
+          </AppText>
+          <Button
+            label={t('common.listen')}
+            icon="listen"
+            variant="ghost"
+            onPress={() => speakGerman(lines[index], { rate: 0.85 })}
+          />
         </View>
       ) : (
         <View style={{ marginTop: space.xl, gap: space.md }}>
@@ -125,5 +132,12 @@ const styles = StyleSheet.create({
   navRow: { flexDirection: 'row', gap: 12 },
   sizeRow: { flexDirection: 'row', gap: 8 },
   sizeButton: { width: 36, height: 36, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  awake: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 6 },
+  awake: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+  },
 });

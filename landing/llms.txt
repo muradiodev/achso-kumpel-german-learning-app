@@ -1,0 +1,8 @@
+# AchsoKumpel
+
+> Free, open-source German practice app for B1 to C1 learners living or working in Germany. Learners build real German sentences for work and daily life by tapping, dragging or typing words, with spaced repetition, a 74-topic grammar checklist (A1 to C2), a personal word list and a new German phrase every morning at 08:00.
+
+- [Web app](https://achsokumpel.deviofy.com/app/): runs in the browser on phones and computers
+- [Source code](https://github.com/muradiodev/achso-kumpel-german-learning-app): MIT licensed, React Native with Expo
+- Interface languages: English, Azerbaijani
+- Price: free, no ads, no subscription

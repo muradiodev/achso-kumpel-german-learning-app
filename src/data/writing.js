@@ -15,7 +15,9 @@ export const WRITING_TASKS = [
     minutes: 30,
     words: 100,
     title: L('Declining a farewell party invitation'),
-    situation: L('Your colleague Frau Becker is leaving the company and invites you to her farewell party on Friday. You cannot come. Write her an email.'),
+    situation: L(
+      'Your colleague Frau Becker is leaving the company and invites you to her farewell party on Friday. You cannot come. Write her an email.',
+    ),
     points: [
       L('Thank her for the invitation'),
       L('Explain why you cannot come'),
@@ -116,7 +118,9 @@ export const WRITING_TASKS = [
     minutes: 30,
     words: 150,
     title: L('Complaint: late and damaged delivery'),
-    situation: L('You ordered a laptop online. It arrived two weeks late and the screen was cracked. Write a complaint to the shop.'),
+    situation: L(
+      'You ordered a laptop online. It arrived two weeks late and the screen was cracked. Write a complaint to the shop.',
+    ),
     points: [
       L('What you ordered and when'),
       L('What went wrong'),
@@ -188,12 +192,7 @@ export const WRITING_TASKS = [
     words: 150,
     title: L('Opinion: home office'),
     situation: L('A forum asks: "Home office: good or bad?" Write your opinion.'),
-    points: [
-      L('Your general view'),
-      L('Two advantages'),
-      L('One disadvantage'),
-      L('Your conclusion'),
-    ],
+    points: [L('Your general view'), L('Two advantages'), L('One disadvantage'), L('Your conclusion')],
     sample: [
       'In den letzten Jahren arbeiten immer mehr Menschen von zu Hause aus. Ich halte das grundsätzlich für eine gute Entwicklung.',
       'Ein großer Vorteil ist, dass man keine Zeit für den Arbeitsweg verliert.',
@@ -272,7 +271,7 @@ export const WRITING_TASKS = [
     ],
     phrases: [
       phrase('Ich möchte gern vom ... bis zum ... Urlaub nehmen.', "I'd like to take leave from ... to ..."),
-      phrase('In dieser Zeit ist nicht viel los.', "Not much is going on during that time."),
+      phrase('In dieser Zeit ist nicht viel los.', 'Not much is going on during that time.'),
       phrase('Ich würde meine Aufgaben an ... übergeben.', 'I would hand my tasks over to ...'),
       phrase('Er hat zugesagt, mich zu vertreten.', 'He has agreed to cover for me.'),
       phrase('Wäre das für Sie in Ordnung?', 'Would that be okay with you?'),

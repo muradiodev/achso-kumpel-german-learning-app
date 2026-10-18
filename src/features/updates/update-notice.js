@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Linking, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
+import { Icon } from '@/components/icon';
 import { useI18n } from '@/i18n';
 import { useTheme } from '@/theme';
 
@@ -34,7 +34,7 @@ export function UpdateNotice() {
     return (
       <View style={[StyleSheet.absoluteFill, styles.blocker, { backgroundColor: colors.bg, padding: space.xl }]}>
         <View style={[styles.icon, { backgroundColor: colors.warningSoft }]}>
-          <Ionicons name="alert-circle-outline" size={30} color={colors.warning} />
+          <Icon name="warning" size={30} color={colors.warning} />
         </View>
         <AppText variant="title" align="center">
           {t('updates.requiredTitle')}
@@ -56,12 +56,15 @@ export function UpdateNotice() {
   if (status !== 'available' || dismissed === remote.version) return null;
 
   return (
-    <View pointerEvents="box-none" style={[styles.bannerWrap, { paddingTop: insets.top + space.sm, paddingHorizontal: space.lg }]}>
+    <View
+      pointerEvents="box-none"
+      style={[styles.bannerWrap, { paddingTop: insets.top + space.sm, paddingHorizontal: space.lg }]}
+    >
       <View
         accessibilityRole="alert"
         style={[styles.banner, { backgroundColor: colors.text, borderRadius: radius.lg, padding: space.md }]}
       >
-        <Ionicons name="sparkles-outline" size={20} color={colors.bg} />
+        <Icon name="sparkle" size={20} color={colors.bg} />
         <AppText variant="small" weight="600" style={[styles.flex, { color: colors.bg }]}>
           {t('updates.available', { version: remote.version })}
         </AppText>
@@ -78,7 +81,7 @@ export function UpdateNotice() {
           accessibilityLabel={t('updates.later')}
           hitSlop={8}
         >
-          <Ionicons name="close" size={18} color={colors.bg} />
+          <Icon name="close" size={18} color={colors.bg} />
         </Pressable>
       </View>
     </View>

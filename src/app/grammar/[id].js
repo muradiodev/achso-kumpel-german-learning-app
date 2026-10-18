@@ -9,6 +9,7 @@ import { ScreenHeader } from '@/components/screen-header';
 import { Segmented } from '@/components/segmented';
 import { SpeakButton } from '@/components/speak-button';
 import { Surface } from '@/components/surface';
+import { TappableText } from '@/components/tappable-text';
 import { SENTENCES, getGrammarTopic } from '@/data';
 import { useProgress } from '@/features/progress/progress-context';
 import { tr } from '@/i18n/content';
@@ -46,7 +47,7 @@ export default function GrammarTopic() {
           <Button
             label={t('grammar.practise')}
             icon="play"
-            onPress={() => router.push({ pathname: '/practice/[mode]', params: { mode: 'grammar', topic: topic.id } })}
+            onPress={() => router.push({ pathname: '/practice/[mode]', params: { mode: 'grammar', topics: topic.id } })}
           />
         ) : null
       }
@@ -87,7 +88,7 @@ export default function GrammarTopic() {
         {topic.examples.map((example) => (
           <View key={example.de} style={styles.example}>
             <View style={styles.flex}>
-              <AppText weight="600">{example.de}</AppText>
+              <TappableText text={example.de} context={example} weight="600" />
               <AppText variant="small" tone="muted">
                 {tr(example.tr, lang)}
               </AppText>

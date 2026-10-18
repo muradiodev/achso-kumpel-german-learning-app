@@ -1,8 +1,8 @@
-import { Ionicons } from '@expo/vector-icons';
 import { memo } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { Icon } from '@/components/icon';
 import { useTheme } from '@/theme';
 
 export const ListRow = memo(function ListRow({ title, subtitle, left, right, onPress, chevron = true }) {
@@ -26,7 +26,7 @@ export const ListRow = memo(function ListRow({ title, subtitle, left, right, onP
         ) : null}
       </View>
       {right}
-      {onPress && chevron ? <Ionicons name="chevron-forward" size={18} color={colors.textFaint} /> : null}
+      {onPress && chevron ? <Icon name="forward" size={18} color={colors.textFaint} /> : null}
     </Pressable>
   );
 });

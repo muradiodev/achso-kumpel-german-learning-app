@@ -45,3 +45,13 @@ yarn-error.*
 
 # IDE
 .idea/
+
+# assembled website
+site/
+
+# API data
+server/data/
+server/node_modules/
+server/version.json
+.deploy-stage/
+.deploy-achsokumpel.tgz

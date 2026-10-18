@@ -8,7 +8,8 @@ export const MAX_WIDTH = 600;
 
 // Page container: background, safe areas, side gutter, optional scroll and a
 // footer pinned above the keyboard (for primary actions on forms).
-export function Screen({ children, scroll = true, footer, contentStyle, padTop = true }) {
+// `overlay` renders above everything (not inside the scroll view), e.g. a sheet.
+export function Screen({ children, scroll = true, footer, contentStyle, padTop = true, overlay }) {
   const { colors, space } = useTheme();
   const insets = useSafeAreaInsets();
   const padding = {
@@ -52,6 +53,7 @@ export function Screen({ children, scroll = true, footer, contentStyle, padTop =
           {footer}
         </View>
       ) : null}
+      {overlay}
     </KeyboardAvoidingView>
   );
 }

@@ -4,7 +4,7 @@
 export { LEVELS } from './levels';
 export { WORDS } from './vocabulary';
 export { SENTENCES } from './sentences';
-export { GRAMMAR_TOPICS, getGrammarTopic } from './grammar';
+export { GRAMMAR_GROUPS, GRAMMAR_TOPICS, getGrammarTopic } from './grammar';
 export { VERBS, PREP_VERBS } from './verbs';
 export { WRITING_TASKS, WRITING_TYPES, getWritingTask } from './writing';
 export { CHANGELOG } from './changelog';

@@ -3,7 +3,7 @@ import { Platform, Pressable, StyleSheet, TextInput, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { useI18n } from '@/i18n';
-import { useTheme } from '@/theme';
+import { fontFor, useTheme } from '@/theme';
 
 // Label above, helper or error below. Never placeholder-as-label.
 export const TextField = forwardRef(function TextField(
@@ -31,7 +31,12 @@ export const TextField = forwardRef(function TextField(
           secureTextEntry={secure && hidden}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          style={[type.body, styles.input, { color: colors.text }, inputStyle]}
+          style={[
+            type.body,
+            styles.input,
+            { color: colors.text, fontFamily: fontFor('400'), fontWeight: undefined },
+            inputStyle,
+          ]}
           {...props}
         />
         {secure ? (

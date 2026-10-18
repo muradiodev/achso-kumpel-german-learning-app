@@ -57,7 +57,14 @@ export default function Writing() {
       keyExtractor={(item) => item.id}
       renderItem={renderItem}
       style={{ backgroundColor: colors.bg }}
-      contentContainerStyle={{ width: '100%', maxWidth: MAX_WIDTH, alignSelf: 'center', paddingHorizontal: space.xl, paddingTop: insets.top + space.lg, paddingBottom: space.xxl }}
+      contentContainerStyle={{
+        width: '100%',
+        maxWidth: MAX_WIDTH,
+        alignSelf: 'center',
+        paddingHorizontal: space.xl,
+        paddingTop: insets.top + space.lg,
+        paddingBottom: space.xxl,
+      }}
       ListHeaderComponent={
         <View style={{ marginBottom: space.lg }}>
           <AppText variant="title">{t('writing.title')}</AppText>
@@ -67,7 +74,12 @@ export default function Writing() {
           <View style={[styles.chips, { marginTop: space.lg }]}>
             <Chip label={t('writing.filters.all')} selected={filter === 'all'} onPress={() => setFilter('all')} />
             {WRITING_TYPES.map((type) => (
-              <Chip key={type} label={t(`writing.filters.${type}`)} selected={filter === type} onPress={() => setFilter(type)} />
+              <Chip
+                key={type}
+                label={t(`writing.filters.${type}`)}
+                selected={filter === type}
+                onPress={() => setFilter(type)}
+              />
             ))}
           </View>
         </View>

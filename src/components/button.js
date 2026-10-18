@@ -1,7 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
+import { Icon } from '@/components/icon';
 import { useTheme } from '@/theme';
 
 export function Button({
@@ -20,6 +20,8 @@ export function Button({
     primary: { bg: colors.accent, fg: colors.onAccent, border: colors.accent },
     secondary: { bg: colors.surface, fg: colors.text, border: colors.border },
     ghost: { bg: 'transparent', fg: colors.accent, border: 'transparent' },
+    // For buttons placed on a brand-purple surface.
+    inverse: { bg: colors.onAccent, fg: colors.accent, border: colors.onAccent },
     danger: { bg: colors.dangerSoft, fg: colors.danger, border: colors.dangerSoft },
   }[variant];
   const inactive = disabled || loading;
@@ -48,8 +50,13 @@ export function Button({
         <ActivityIndicator color={palette.fg} />
       ) : (
         <View style={styles.row}>
-          {icon ? <Ionicons name={icon} size={18} color={palette.fg} /> : null}
-          <AppText variant={size === 'lg' ? 'body' : 'small'} weight="600" style={{ color: palette.fg }} numberOfLines={1}>
+          {icon ? <Icon name={icon} size={18} color={palette.fg} weight={icon === 'play' ? 'fill' : 'bold'} /> : null}
+          <AppText
+            variant={size === 'lg' ? 'body' : 'small'}
+            weight="600"
+            style={{ color: palette.fg }}
+            numberOfLines={1}
+          >
             {label}
           </AppText>
         </View>

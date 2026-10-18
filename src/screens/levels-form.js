@@ -1,10 +1,10 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
 import { Chip } from '@/components/chip';
+import { Icon } from '@/components/icon';
 import { Screen } from '@/components/screen';
 import { LEVELS } from '@/data';
 import { useAuth } from '@/features/auth/auth-context';
@@ -74,8 +74,8 @@ export function LevelsForm({ header, ctaLabel, onDone }) {
               <AppText variant="small" tone="muted" style={styles.levelText}>
                 {t(`levels.${level}`)}
               </AppText>
-              <Ionicons
-                name={active ? 'checkmark-circle' : 'ellipse-outline'}
+              <Icon
+                name={active ? 'checkCircle' : 'circle'}
                 size={22}
                 color={active ? colors.accent : colors.textFaint}
               />
@@ -94,7 +94,12 @@ export function LevelsForm({ header, ctaLabel, onDone }) {
       </AppText>
       <View style={[styles.chips, { marginTop: space.md }]}>
         {FOCUS.map((f) => (
-          <Chip key={f} label={t(`focus.${f}`)} selected={focus.includes(f)} onPress={() => toggle(focus, setFocus, f)} />
+          <Chip
+            key={f}
+            label={t(`focus.${f}`)}
+            selected={focus.includes(f)}
+            onPress={() => toggle(focus, setFocus, f)}
+          />
         ))}
       </View>
     </Screen>
@@ -102,7 +107,14 @@ export function LevelsForm({ header, ctaLabel, onDone }) {
 }
 
 const styles = StyleSheet.create({
-  level: { flexDirection: 'row', alignItems: 'center', gap: 14, borderWidth: 1, paddingHorizontal: 16, paddingVertical: 14 },
+  level: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
   levelCode: { width: 32 },
   levelText: { flex: 1 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

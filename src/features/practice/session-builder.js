@@ -32,8 +32,8 @@ function interleaveByLevel(items) {
 
 const inLevels = (levels) => (entry) => levels.includes(entry.level);
 
-function activeTopics(grammarStatus, topic) {
-  if (topic) return new Set([topic]);
+function activeTopics(grammarStatus, topics) {
+  if (topics?.length) return new Set(topics);
   return new Set(
     Object.entries(grammarStatus)
       .filter(([, status]) => status === 'learning' || status === 'learned')
@@ -41,7 +41,10 @@ function activeTopics(grammarStatus, topic) {
   );
 }
 
-export function buildPool({ mode, levels, grammarStatus = {}, topic }) {
+const WORD_BY_ID = new Map(WORDS.map((w) => [w.id, w]));
+
+// topics: explicit grammar topic ids chosen by the learner (overrides levels)
+export function buildPool({ mode, levels, grammarStatus = {}, topics, myWords = {} }) {
   const words = WORDS.filter(inLevels(levels));
   const sentences = SENTENCES.filter(inLevels(levels));
   const recall = (list) => list.map((s) => makeItem('recall', s));
@@ -60,12 +63,18 @@ export function buildPool({ mode, levels, grammarStatus = {}, topic }) {
       return [...recall(tagged), ...cloze(tagged)];
     }
     case 'grammar': {
-      const topics = activeTopics(grammarStatus, topic);
-      // A topic-specific session ignores the level filter: the user asked for it.
-      const source = topic ? SENTENCES : sentences;
-      const matching = source.filter((s) => s.grammar?.some((g) => topics.has(g)));
+      const chosen = activeTopics(grammarStatus, topics);
+      // Explicitly chosen topics ignore the level filter: the learner asked for them.
+      const source = topics?.length ? SENTENCES : sentences;
+      const matching = source.filter((s) => s.grammar?.some((g) => chosen.has(g)));
       return [...recall(matching), ...cloze(matching)];
     }
+    case 'mine':
+      return Object.values(myWords).map((w) =>
+        w.wordId && WORD_BY_ID.has(w.wordId)
+          ? makeItem('word', WORD_BY_ID.get(w.wordId))
+          : makeItem('myword', { id: w.id, de: w.de, level: 'mine', context: w.context }),
+      );
     case 'aux':
       return VERBS.filter((v) => v.p2).map((v) => makeItem('aux', v));
     case 'forms':
@@ -73,11 +82,7 @@ export function buildPool({ mode, levels, grammarStatus = {}, topic }) {
     case 'weak':
     case 'mixed':
     default:
-      return [
-        ...words.map((w) => makeItem('word', w)),
-        ...recall(sentences),
-        ...cloze(sentences),
-      ];
+      return [...words.map((w) => makeItem('word', w)), ...recall(sentences), ...cloze(sentences)];
   }
 }
 
@@ -86,12 +91,13 @@ export function buildSession({
   levels,
   srs,
   grammarStatus,
-  topic,
+  topics,
+  myWords,
   size = 15,
   newLimit = 8,
   now = Date.now(),
 }) {
-  const pool = buildPool({ mode, levels, grammarStatus, topic });
+  const pool = buildPool({ mode, levels, grammarStatus, topics, myWords });
 
   if (mode === 'weak') {
     return pool
