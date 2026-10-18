@@ -44,7 +44,13 @@ function activeTopics(grammarStatus, topics) {
 const WORD_BY_ID = new Map(WORDS.map((w) => [w.id, w]));
 
 // topics: explicit grammar topic ids chosen by the learner (overrides levels)
-export function buildPool({ mode, levels, grammarStatus = {}, topics, myWords = {} }) {
+// Verb quizzes skip verbs the learner marked as known, unless that leaves nothing.
+const unknownFirst = (verbs, knownVerbs) => {
+  const fresh = verbs.filter((v) => !knownVerbs[v.id]);
+  return fresh.length ? fresh : verbs;
+};
+
+export function buildPool({ mode, levels, grammarStatus = {}, topics, myWords = {}, knownVerbs = {} }) {
   const words = WORDS.filter(inLevels(levels));
   const sentences = SENTENCES.filter(inLevels(levels));
   const recall = (list) => list.map((s) => makeItem('recall', s));
@@ -76,9 +82,15 @@ export function buildPool({ mode, levels, grammarStatus = {}, topics, myWords = 
           : makeItem('myword', { id: w.id, de: w.de, level: 'mine', context: w.context }),
       );
     case 'aux':
-      return VERBS.filter((v) => v.p2).map((v) => makeItem('aux', v));
+      return unknownFirst(
+        VERBS.filter((v) => v.p2),
+        knownVerbs,
+      ).map((v) => makeItem('aux', v));
     case 'forms':
-      return VERBS.filter((v) => v.type !== 'regular' && v.p2).map((v) => makeItem('forms', v));
+      return unknownFirst(
+        VERBS.filter((v) => v.type !== 'regular' && v.p2),
+        knownVerbs,
+      ).map((v) => makeItem('forms', v));
     case 'weak':
     case 'mixed':
     default:
@@ -93,11 +105,12 @@ export function buildSession({
   grammarStatus,
   topics,
   myWords,
+  knownVerbs,
   size = 15,
   newLimit = 8,
   now = Date.now(),
 }) {
-  const pool = buildPool({ mode, levels, grammarStatus, topics, myWords });
+  const pool = buildPool({ mode, levels, grammarStatus, topics, myWords, knownVerbs });
 
   if (mode === 'weak') {
     return pool

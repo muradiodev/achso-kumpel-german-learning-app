@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '@/components/app-text';
 import { Badge } from '@/components/badge';
 import { MAX_WIDTH } from '@/components/screen';
+import { ScreenHeader } from '@/components/screen-header';
 import { Chip } from '@/components/chip';
 import { Surface } from '@/components/surface';
 import { WRITING_TASKS, WRITING_TYPES } from '@/data';
@@ -61,8 +62,8 @@ export default function Writing() {
       }}
       ListHeaderComponent={
         <View style={{ marginBottom: space.lg }}>
-          <AppText variant="display">{t('writing.title')}</AppText>
-          <AppText variant="small" tone="muted" style={{ marginTop: space.xs }}>
+          <ScreenHeader title={t('writing.title')} />
+          <AppText variant="small" tone="muted">
             {t('writing.sub')}
           </AppText>
           <View style={[styles.chips, { marginTop: space.lg }]}>

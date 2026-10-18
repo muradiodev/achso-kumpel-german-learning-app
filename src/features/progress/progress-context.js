@@ -17,6 +17,8 @@ import { getJSON, setJSON } from '@/lib/storage';
 //   myWords:  { id: { de, wordId, context, addedAt } }  words the learner saved
 //   grammarUse: { topicId: { practised, right } }      sentences practised per topic
 //   gifts:    { 'YYYY-MM-DD': { id, unlockedAt, seen } } daily motivation gifts
+//   reading:  { textId: { readAt, correct, total } }     finished reading texts
+//   knownVerbs: { verbId: markedAt }                     verbs the learner already knows
 //   schema:   see migrations.js
 const EMPTY = {
   schema: PROGRESS_SCHEMA,
@@ -27,6 +29,8 @@ const EMPTY = {
   myWords: {},
   grammarUse: {},
   gifts: {},
+  reading: {},
+  knownVerbs: {},
 };
 
 // "recall|s-b1-04" → grammar topics of that sentence, to count grammar use.
@@ -213,6 +217,28 @@ export function ProgressProvider({ children }) {
     [update],
   );
 
+  // Keeps the best quiz result; readAt is the last time the text was finished.
+  const markReadingDone = useCallback(
+    (textId, correct, total) =>
+      update((data) => {
+        const prev = data.reading?.[textId];
+        const best = prev && prev.correct > correct ? prev.correct : correct;
+        return { ...data, reading: { ...data.reading, [textId]: { readAt: Date.now(), correct: best, total } } };
+      }),
+    [update],
+  );
+
+  const toggleKnownVerb = useCallback(
+    (verbId) =>
+      update((data) => {
+        const knownVerbs = { ...data.knownVerbs };
+        if (knownVerbs[verbId]) delete knownVerbs[verbId];
+        else knownVerbs[verbId] = Date.now();
+        return { ...data, knownVerbs };
+      }),
+    [update],
+  );
+
   const markWritingCopied = useCallback(
     (taskId) =>
       update((data) => {
@@ -232,12 +258,25 @@ export function ProgressProvider({ children }) {
       recordReview,
       setGrammarStatus,
       markWritingCopied,
+      markReadingDone,
+      toggleKnownVerb,
       addMyWord,
       removeMyWord,
       unlockGift,
       markGiftSeen,
     }),
-    [state, recordReview, setGrammarStatus, markWritingCopied, addMyWord, removeMyWord, unlockGift, markGiftSeen],
+    [
+      state,
+      recordReview,
+      setGrammarStatus,
+      markWritingCopied,
+      markReadingDone,
+      toggleKnownVerb,
+      addMyWord,
+      removeMyWord,
+      unlockGift,
+      markGiftSeen,
+    ],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

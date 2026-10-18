@@ -590,7 +590,7 @@ const rows = {
 
 const ARTICLES = ['der ', 'die ', 'das '];
 
-const slug = (text) =>
+export const slug = (text) =>
   text
     .toLowerCase()
     .replace(/ä/g, 'ae')
@@ -600,18 +600,24 @@ const slug = (text) =>
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
 
-export const WORDS = Object.entries(rows).flatMap(([level, list]) =>
-  list.map(([de, en, exDe, exEn, extra = {}]) => {
-    const article = ARTICLES.find((a) => de.startsWith(a))?.trim() ?? null;
-    return {
-      id: `w-${slug(de)}`,
-      level,
-      de,
-      article,
-      plural: extra.pl ?? null,
-      tags: ['everyday', ...(extra.t ?? [])],
-      tr: extra.az ? { en, az: extra.az } : { en },
-      example: { de: exDe, tr: extra.exAz ? { en: exEn, az: extra.exAz } : { en: exEn } },
-    };
-  }),
-);
+// rowsByLevel: { B1: [row, ...] } in the row format above. `source` marks
+// rows imported from another project (see src/data/wordfeather.js).
+export const toWords = (rowsByLevel, source = null) =>
+  Object.entries(rowsByLevel).flatMap(([level, list]) =>
+    list.map(([de, en, exDe, exEn, extra = {}]) => {
+      const article = ARTICLES.find((a) => de.startsWith(a))?.trim() ?? null;
+      return {
+        id: `w-${slug(de)}`,
+        level,
+        de,
+        article,
+        plural: extra.pl ?? null,
+        tags: ['everyday', ...(extra.t ?? [])],
+        tr: extra.az ? { en, az: extra.az } : { en },
+        example: { de: exDe, tr: extra.exAz ? { en: exEn, az: extra.exAz } : { en: exEn } },
+        ...(source ? { source } : {}),
+      };
+    }),
+  );
+
+export const WORDS = toWords(rows);

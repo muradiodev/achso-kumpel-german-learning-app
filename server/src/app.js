@@ -5,6 +5,7 @@ import { bodyLimit } from 'hono/body-limit';
 import { cors } from 'hono/cors';
 import { secureHeaders } from 'hono/secure-headers';
 
+import { publicMember } from './community.js';
 import { hashPassword, hashToken, newId, newToken, rateLimiter, verifyPassword } from './security.js';
 
 const SESSION_DAYS = 90;
@@ -165,6 +166,28 @@ export function createApp({ db, allowedOrigins, versionFile }) {
     );
     const row = await progressOf(userId);
     return c.json({ data: row.data, updatedAt: Number(row.updated_at) });
+  });
+
+  // Learners who finished setup, for the community screens. Only public
+  // fields leave the server (see community.js); never the email.
+  const MEMBERS_SQL = `SELECT u.id, u.profile, u.created_at, p.data
+    FROM users u LEFT JOIN progress p ON p.user_id = u.id
+    WHERE coalesce(u.profile->>'firstName', '') <> ''`;
+
+  app.get('/v1/community', requireUser, async (c) => {
+    const now = Date.now();
+    const { rows } = await db.query(`${MEMBERS_SQL} ORDER BY u.created_at DESC LIMIT 1000`);
+    const members = rows.map((row) => {
+      const { week, ...member } = publicMember(row, now);
+      return member;
+    });
+    return c.json({ members, me: c.get('userId') });
+  });
+
+  app.get('/v1/community/:id', requireUser, async (c) => {
+    const row = await one(`${MEMBERS_SQL} AND u.id = $1`, [c.req.param('id')]);
+    if (!row) return c.json({ error: 'not_found' }, 404);
+    return c.json({ member: publicMember(row, Date.now()) });
   });
 
   app.notFound((c) => c.json({ error: 'not_found' }, 404));

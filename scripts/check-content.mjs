@@ -11,7 +11,16 @@ async function load(file) {
   return import(`data:text/javascript;base64,${Buffer.from(code).toString('base64')}`);
 }
 
-const { WORDS } = await load('vocabulary.js');
+const { WORDS: OWN_WORDS, toWords, slug } = await load('vocabulary.js');
+const { WF_DECK, WF_DICTIONARY } = await load('wordfeather.js');
+// reading.js imports the level files, which a data: URL cannot resolve, so load those directly.
+const READINGS = (
+  await Promise.all(
+    ['a1', 'a2', 'b1', 'b2', 'c1', 'c2'].map(async (l) => Object.values(await load(`reading/${l}.js`))[0]),
+  )
+).flat();
+const WORDS = [...OWN_WORDS, ...toWords(WF_DECK, 'wordfeather')];
+const DICTIONARY = WF_DICTIONARY.map(([de]) => ({ id: `d-${slug(de)}` }));
 const { SENTENCES } = await load('sentences.js');
 const { GRAMMAR_TOPICS } = await load('grammar.js');
 const { VERBS, PREP_VERBS } = await load('verbs.js');
@@ -28,6 +37,8 @@ function unique(list, label) {
 }
 
 unique(WORDS, 'words');
+unique(DICTIONARY, 'dictionary');
+unique(READINGS, 'reading');
 unique(SENTENCES, 'sentences');
 unique(GRAMMAR_TOPICS, 'grammar');
 unique(VERBS, 'verbs');
@@ -46,7 +57,25 @@ for (const s of SENTENCES) {
   }
 }
 
-const all = JSON.stringify({ WORDS, SENTENCES, GRAMMAR_TOPICS, VERBS, PREP_VERBS, WRITING_TASKS });
+const perLevel = {};
+for (const r of READINGS) {
+  perLevel[r.level] = (perLevel[r.level] ?? 0) + 1;
+  if (!r.id.startsWith(`r-${r.level.toLowerCase()}-`)) errors.push(`${r.id}: id does not match level ${r.level}`);
+  for (const [i, q] of r.questions.entries()) {
+    if (!q.options[q.answer]) errors.push(`${r.id}: question ${i + 1} has no option ${q.answer}`);
+  }
+}
+
+const all = JSON.stringify({
+  WORDS,
+  WF_DICTIONARY,
+  SENTENCES,
+  GRAMMAR_TOPICS,
+  VERBS,
+  PREP_VERBS,
+  WRITING_TASKS,
+  READINGS,
+});
 if (/[–—]/.test(all)) errors.push('content contains an en or em dash; use a hyphen');
 
 const perTopic = Object.fromEntries(GRAMMAR_TOPICS.map((t) => [t.id, 0]));
@@ -57,7 +86,7 @@ const thin = Object.entries(perTopic)
 const withoutSentences = GRAMMAR_TOPICS.filter((t) => !used.has(t.id)).map((t) => t.id);
 
 console.log(
-  `words ${WORDS.length}, sentences ${SENTENCES.length}, grammar ${GRAMMAR_TOPICS.length}, verbs ${VERBS.length}, prep verbs ${PREP_VERBS.length}, writing ${WRITING_TASKS.length}`,
+  `words ${WORDS.length} (own ${OWN_WORDS.length}), dictionary ${DICTIONARY.length}, reading ${READINGS.length}, sentences ${SENTENCES.length}, grammar ${GRAMMAR_TOPICS.length}, verbs ${VERBS.length}, prep verbs ${PREP_VERBS.length}, writing ${WRITING_TASKS.length}`,
 );
 if (withoutSentences.length) errors.push(`topics without practice sentences: ${withoutSentences.join(', ')}`);
 if (thin.length) console.log(`topics with fewer than 3 sentences: ${thin.join(', ')}`);

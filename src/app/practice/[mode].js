@@ -43,6 +43,7 @@ export default function PracticeSession() {
         srs: progress.srs,
         grammarStatus: progress.grammar,
         myWords: progress.myWords,
+        knownVerbs: progress.knownVerbs,
         // A chosen topic set or word list may be larger than a normal session.
         size: topics || mode === 'mine' ? 20 : 15,
         newLimit: topics || mode === 'mine' ? 20 : 8,
@@ -134,7 +135,10 @@ export default function PracticeSession() {
           ].map(([value, label]) => (
             <View
               key={label}
-              style={[styles.stat, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.lg }]}
+              style={[
+                styles.stat,
+                { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.lg },
+              ]}
             >
               <AppText variant="title">{String(value)}</AppText>
               <AppText variant="small" tone="muted">

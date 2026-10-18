@@ -19,6 +19,7 @@ import { useI18n } from '@/i18n';
 import { useTheme, useThemeMode } from '@/theme';
 
 const REPO_URL = 'https://github.com/muradiodev/achso-kumpel-german-learning-app';
+const DONATE_URL = 'https://paypal.me/muradjava';
 
 export default function Profile() {
   const { t, lang } = useI18n();
@@ -118,6 +119,14 @@ export default function Profile() {
           size="md"
           onPress={() => Linking.openURL(REPO_URL)}
           style={{ marginTop: space.sm, alignSelf: 'flex-start', paddingHorizontal: 0 }}
+        />
+        <Button
+          label={t('profile.donate')}
+          icon="heart"
+          variant="secondary"
+          size="md"
+          onPress={() => Linking.openURL(DONATE_URL)}
+          style={{ marginTop: space.xs }}
         />
       </Surface>
 

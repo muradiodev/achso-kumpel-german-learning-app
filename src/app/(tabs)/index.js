@@ -27,7 +27,11 @@ const QUICK = [
   { key: 'sentences', icon: 'sentences', href: '/practice/sentences' },
   { key: 'work', icon: 'work', href: '/practice/work' },
   { key: 'verbs', icon: 'verbs', href: '/verbs' },
+  { key: 'reading', icon: 'book', href: '/reading' },
+  { key: 'mine', icon: 'words', href: '/my-words' },
 ];
+
+const QUICK_TITLE = { verbs: 'practice.verbsTitle', reading: 'reading.title', mine: 'myWords.title' };
 
 export default function Today() {
   const { t, lang } = useI18n();
@@ -161,7 +165,7 @@ export default function Today() {
           >
             <IconChip name={item.icon} size={36} />
             <AppText weight="600" numberOfLines={2}>
-              {item.key === 'verbs' ? t('practice.verbsTitle') : t(`practice.modes.${item.key}.title`)}
+              {t(QUICK_TITLE[item.key] ?? `practice.modes.${item.key}.title`)}
             </AppText>
           </Pressable>
         ))}

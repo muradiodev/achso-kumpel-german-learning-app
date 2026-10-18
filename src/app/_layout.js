@@ -74,6 +74,7 @@ function RootNavigator() {
           <Stack.Screen name="verbs" />
           <Stack.Screen name="progress" />
           <Stack.Screen name="gifts" />
+          <Stack.Screen name="writing/index" />
           <Stack.Screen name="writing/[id]" />
           <Stack.Screen name="writing/copy/[id]" options={{ gestureEnabled: false }} />
           <Stack.Screen name="settings/levels" />
@@ -81,6 +82,9 @@ function RootNavigator() {
           <Stack.Screen name="settings/account" />
           <Stack.Screen name="settings/language" />
           <Stack.Screen name="my-words" />
+          <Stack.Screen name="reading/index" />
+          <Stack.Screen name="reading/[id]" />
+          <Stack.Screen name="community/[id]" />
         </Stack.Protected>
       </Stack>
     </>

@@ -15,6 +15,7 @@ Free, open source, no ads, no paywall.
 ![Expo SDK 58](https://img.shields.io/badge/Expo-SDK%2058-18181B.svg)
 ![Platforms](https://img.shields.io/badge/platforms-Android%20%C2%B7%20iOS%20%C2%B7%20Web-52525B.svg)
 ![Levels](https://img.shields.io/badge/levels-A1%20to%20C2-15803D.svg)
+[![Donate with PayPal](https://img.shields.io/badge/donate-PayPal-6E3BE0.svg?logo=paypal)](https://paypal.me/muradjava)
 
 <img src="docs/screenshots/desktop.png" alt="AchsoKumpel on a desktop browser: the app opens as one large phone screen" width="860">
 
@@ -76,7 +77,7 @@ Open **Today** and tap **Start session**. A session takes about ten minutes and 
 | --- | --- |
 | **Say it in German** | You see an English sentence and produce the German in one of three ways, picked with the switch above the card (the app remembers your choice): **Words** (tap word tiles to place them, drag a placed tile to reorder it, tap it to send it back), **Keyboard** (type the sentence) or **Speak** (say it out loud, tap **Show answer**, then rate yourself **Hard**, **Good**, **Easy** or **Again**). |
 | **Word cards** | German to English or English to German, with article, plural and an example sentence. |
-| **Fill the gap** | You type the missing word in a real sentence. *ae, oe, ue, ss* count as *ä, ö, ü, ß*. |
+| **Fill the gap** | You type the missing word in a real sentence. *ae, oe, ue, ss* count as *ä, ö, ü, ß*. Stuck? **Hint** shows three words, one of them right. |
 
 With **Words** and **Keyboard**, tap **Check**. Words in the wrong place turn red; tap **Try again** to fix them, or **Show answer**. Right on the first try counts as Good, right after a retry as Hard, and showing the answer as Again.
 
@@ -92,7 +93,15 @@ After each session a short line tells you how it went, in plain words rather tha
 
 ### Save the words you want to learn
 
-Tap any German word in a practice card, a grammar example or a Schreiben text. A sheet shows the word, its translation if it is in the dictionary (verb forms like *ging* or *denke* are recognised), and the sentence you found it in. **Add to my words** puts it on your own list; **Practice → My words** drills that list.
+Tap any German word in a practice card, a grammar example, a reading text or a Schreiben text. A sheet shows the word, its translation if it is in the dictionary (about 5,000 words; 2,000 of them, B1 to C2, are also practice cards) (verb forms like *ging* or *denke* are recognised), and the sentence you found it in. **Add to my words** puts it on your own list; **Practice → My words** drills that list.
+
+### Read and collect words
+
+**Practice → Reading** has 180 short texts about work and life in Germany, 30 for each level from A1 to C2: a new flat, the daily stand-up, code reviews, the four-day week, Behördendeutsch. The list opens on your own levels. Tap any word you don't know to see its meaning and save it with the sentence it came from. Each text has a listen button per paragraph, a translation switch and three questions at the end. The words you saved from a text are listed under it, one tap away from practising them.
+
+### See where you rank
+
+The **Rank** tab ranks learners by reviews this week, streak and mastered items, and lists everyone who has registered. Tap a learner to see their profile and progress. Others see your name, avatar, profession, levels and progress, never your email, phone or birth date.
 
 ### See your progress
 
@@ -106,11 +115,11 @@ Every topic has at least three practice sentences. Tap **Build a practice set**,
 
 ### Get verbs right
 
-**Practice → Verbs** lists irregular and regular verbs, verbs that take *sein* in the Perfekt, verbs that take *haben*, and verbs with fixed prepositions (*warten auf*, *sich kümmern um*). Two quizzes drill *sein or haben* and the Partizip II.
+**Practice → Verbs** lists irregular and regular verbs, verbs that take *sein* in the Perfekt, verbs that take *haben*, and verbs with fixed prepositions (*warten auf*, *sich kümmern um*). Two quizzes drill *sein or haben* and the Partizip II. Tick the verbs you already know: they leave the list (turn on **Show known** to see them again) and the quizzes skip them, so you spend your time on new ones. Tap a verb to add it to My words.
 
 ### Write by hand
 
-The **Schreiben** tab has telc-style B1 and B2 letters, work emails (calling in sick, asking for vacation, a status update) and an opinion text. Each task shows the situation, the points to cover, a sample text and useful phrases.
+**Practice → Schreiben** has telc-style B1 and B2 letters, work emails (calling in sick, asking for vacation, a status update) and an opinion text. Each task shows the situation, the points to cover, a sample text and useful phrases.
 
 **Copy by hand** shows the sample one sentence at a time in large type, reads it aloud on request, and keeps the screen on so you can copy it onto paper. The tasks follow the telc Schreiben format but are practice material, not official exam tasks.
 
@@ -231,6 +240,23 @@ scripts/          content and translation checks, version manifest, site build
 
 The interface both feedback features plug into is described in [docs/AI.md](docs/AI.md).
 
+## Support the project
+
+AchsoKumpel is free, has no ads and keeps no paywall. If it helps you speak more German, you can support it with a donation on PayPal:
+
+[![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-6E3BE0.svg?logo=paypal)](https://paypal.me/muradjava)
+
+**[paypal.me/muradjava](https://paypal.me/muradjava)**
+
+The same link is in the app under **Me → About AchsoKumpel** and in the footer of the [website](https://achsokumpel.deviofy.com). Donations pay for the server and keep the app free for everyone. Sentences, translations and bug reports help just as much: see [Contributing](#contributing).
+
 ## License
 
 [MIT](LICENSE)
+
+The code and our own content are MIT. One exception: most of the vocabulary in
+`src/data/wordfeather.js` comes from [Wordfeather](https://github.com/abdullahbutt/wordfeather)
+by Abdullah Butt and stays under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
+We selected and filtered it (B1 to C2 for practice, the rest for tap-to-translate) with
+`scripts/import-wordfeather.mjs`. It may only be used non-commercially; if AchsoKumpel
+ever becomes a paid product, that file has to be removed or licensed separately.

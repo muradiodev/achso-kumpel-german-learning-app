@@ -78,3 +78,36 @@ test('rejects bad input and unknown origins', async () => {
   const ok = await app.request('/health', { headers: { Origin: ORIGIN } });
   assert.equal(ok.headers.get('access-control-allow-origin'), ORIGIN);
 });
+
+test('community shows members and stats, never emails', async () => {
+  const { call } = await setup();
+  const join = async (email, firstName) => {
+    const { token } = await (await call('POST', '/v1/auth/register', { email, password: 'kumpel-test-1' })).json();
+    if (firstName) await call('PATCH', '/v1/me/profile', { firstName, lastName: 'K', phone: '+4917012345' }, token);
+    return token;
+  };
+  const leyla = await join('leyla@example.com', 'Leyla');
+  await join('tural@example.com', 'Tural');
+  await join('halfway@example.com'); // registered but setup not finished
+
+  const today = new Date().toISOString().slice(0, 10);
+  const srs = { 'word|w1': { interval: 9 }, 'word|w2': { interval: 1 } };
+  await call('PUT', '/v1/progress', { data: { srs, activity: { [today]: 12 } }, updatedAt: Date.now() }, leyla);
+
+  assert.equal((await call('GET', '/v1/community')).status, 401);
+  const list = await call('GET', '/v1/community', null, leyla);
+  const body = await list.text();
+  assert.ok(!body.includes('@example.com'));
+  assert.ok(!body.includes('+4917012345'));
+  const { members, me } = JSON.parse(body);
+  assert.deepEqual(members.map((m) => m.firstName).sort(), ['Leyla', 'Tural']);
+  const mine = members.find((m) => m.id === me);
+  assert.equal(mine.stats.mastered, 1);
+  assert.equal(mine.stats.weekReviews, 12);
+  assert.equal(mine.stats.streak, 1);
+
+  const detail = await (await call('GET', `/v1/community/${me}`, null, leyla)).json();
+  assert.equal(detail.member.week.length, 7);
+  assert.equal(detail.member.email, undefined);
+  assert.equal((await call('GET', '/v1/community/nobody', null, leyla)).status, 404);
+});

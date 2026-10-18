@@ -10,7 +10,7 @@ const ICONS = {
   index: 'today',
   practice: 'practice',
   grammar: 'grammar',
-  writing: 'writing',
+  community: 'community',
   profile: 'profile',
 };
 
@@ -57,7 +57,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="index" options={{ title: t('tabs.today') }} />
       <Tabs.Screen name="practice" options={{ title: t('tabs.practice') }} />
       <Tabs.Screen name="grammar" options={{ title: t('tabs.grammar') }} />
-      <Tabs.Screen name="writing" options={{ title: t('tabs.writing') }} />
+      <Tabs.Screen name="community" options={{ title: t('tabs.community') }} />
       <Tabs.Screen name="profile" options={{ title: t('tabs.profile') }} />
     </Tabs>
   );

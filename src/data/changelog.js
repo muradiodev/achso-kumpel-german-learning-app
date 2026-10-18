@@ -7,11 +7,33 @@ const L = (en) => ({ en });
 
 export const CHANGELOG = [
   {
+    version: '0.6.0',
+    date: '2026-10-18',
+    notes: [
+      L(
+        'Reading: 180 short texts about work and life in Germany, 30 for every level from A1 to C2. Tap any word to save it, then practise it.',
+      ),
+      L(
+        'About 1,900 new practice words from B1 to C2, and a dictionary of 3,000 more for tapping words while you read.',
+      ),
+      L(
+        'Rank: see where you stand this week, by streak and by mastered items, and visit other learners’ profiles. Nobody sees your email.',
+      ),
+      L('Fill the gap has a Hint button with three words to choose from.'),
+      L('Tick the verbs you already know and they leave the list and the quizzes.'),
+      L('Schreiben moved into Practice.'),
+    ],
+  },
+  {
     version: '0.5.0',
     date: '2026-10-18',
     notes: [
-      L('Build sentences with word tiles: tap them into place, drag to reorder, check, and try again. Or type it, or say it.'),
-      L('A new German phrase every morning at 08:00, with a short note for the day. All your earlier ones stay in Your gifts.'),
+      L(
+        'Build sentences with word tiles: tap them into place, drag to reorder, check, and try again. Or type it, or say it.',
+      ),
+      L(
+        'A new German phrase every morning at 08:00, with a short note for the day. All your earlier ones stay in Your gifts.',
+      ),
       L('Your account and progress now sync between your phone and the web.'),
     ],
   },

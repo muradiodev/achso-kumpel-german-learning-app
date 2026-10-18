@@ -82,6 +82,18 @@ export default function Practice() {
           />
         ))}
         <ListRow
+          left={icon('writing')}
+          title={t('writing.title')}
+          subtitle={t('practice.writingBody')}
+          onPress={() => router.push('/writing')}
+        />
+        <ListRow
+          left={icon('book')}
+          title={t('reading.title')}
+          subtitle={t('reading.practiceBody')}
+          onPress={() => router.push('/reading')}
+        />
+        <ListRow
           left={icon('words')}
           title={t('myWords.title')}
           subtitle={t('practice.modes.mine.body')}
@@ -103,5 +115,12 @@ const styles = StyleSheet.create({
   orn: { position: 'absolute', width: 120, height: 120, borderRadius: 60, right: -36, top: -40, opacity: 0.55 },
   heroTop: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   soft: { opacity: 0.86 },
-  start: { flexDirection: 'row', alignItems: 'center', gap: 8, alignSelf: 'flex-start', minHeight: 40, paddingHorizontal: 14 },
+  start: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    alignSelf: 'flex-start',
+    minHeight: 40,
+    paddingHorizontal: 14,
+  },
 });

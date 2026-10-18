@@ -1,4 +1,4 @@
-import { VERBS, WORDS } from '@/data';
+import { DICTIONARY, VERBS, WORDS } from '@/data';
 
 // Finds a dictionary entry for a word tapped inside a sentence. Matching is
 // deliberately simple: exact headword, noun without article, verb infinitive,
@@ -8,8 +8,10 @@ import { VERBS, WORDS } from '@/data';
 const ARTICLE = /^(der|die|das)\s+/;
 const lower = (s) => s.toLowerCase();
 
-// Dictionary entries: vocabulary plus verbs (verbs carry no article or plural).
-const ENTRIES = [...WORDS, ...VERBS.map((v) => ({ id: v.id, de: v.inf, tr: v.tr, plural: null }))];
+// Dictionary entries: vocabulary plus verbs (verbs carry no article or plural),
+// then the lookup-only dictionary. Earlier entries win when a form matches twice.
+const ENTRIES = [...WORDS, ...VERBS.map((v) => ({ id: v.id, de: v.inf, tr: v.tr, plural: null })), ...DICTIONARY];
+const LOOKUP_ONLY = new Set(DICTIONARY.map((d) => d.id));
 export const ENTRY_BY_ID = new Map(ENTRIES.map((e) => [e.id, e]));
 
 const index = new Map();
@@ -26,9 +28,12 @@ for (const w of ENTRIES) {
   };
   add(head);
   add(bare);
+  // "der/die Erwachsene" → "erwachsene"
+  if (bare.startsWith('der/die ')) add(bare.slice(8));
   // "sich kümmern um" → "kümmern", "zuständig für" → "zuständig"
   const parts = bare.split(' ').filter((p) => p !== 'sich');
-  if (parts.length > 1) add(parts[0]);
+  // Only for our own entries: thousands of imported phrases would claim "auf", "in".
+  if (parts.length > 1 && !LOOKUP_ONLY.has(w.id) && !w.source) add(parts[0]);
   if (w.plural) add(lower(w.plural).replace(ARTICLE, ''));
 }
 

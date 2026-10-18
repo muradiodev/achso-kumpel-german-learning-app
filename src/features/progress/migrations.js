@@ -25,7 +25,18 @@ function knownItemKeys() {
 }
 
 export function migrateProgress(raw) {
-  let data = { srs: {}, grammar: {}, writing: {}, activity: {}, myWords: {}, grammarUse: {}, gifts: {}, ...raw };
+  let data = {
+    srs: {},
+    grammar: {},
+    writing: {},
+    activity: {},
+    myWords: {},
+    grammarUse: {},
+    gifts: {},
+    reading: {},
+    knownVerbs: {},
+    ...raw,
+  };
   let schema = data.schema ?? 1;
   const notes = [];
 

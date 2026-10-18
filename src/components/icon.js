@@ -24,9 +24,11 @@ import { CodeIcon } from 'phosphor-react-native/src/icons/Code';
 import { CoffeeIcon } from 'phosphor-react-native/src/icons/Coffee';
 import { DownloadSimpleIcon } from 'phosphor-react-native/src/icons/DownloadSimple';
 import { EyeIcon } from 'phosphor-react-native/src/icons/Eye';
+import { FireIcon } from 'phosphor-react-native/src/icons/Fire';
 import { GiftIcon } from 'phosphor-react-native/src/icons/Gift';
 import { GitBranchIcon } from 'phosphor-react-native/src/icons/GitBranch';
 import { GraduationCapIcon } from 'phosphor-react-native/src/icons/GraduationCap';
+import { HeartIcon } from 'phosphor-react-native/src/icons/Heart';
 import { HeartbeatIcon } from 'phosphor-react-native/src/icons/Heartbeat';
 import { KeyboardIcon } from 'phosphor-react-native/src/icons/Keyboard';
 import { LeafIcon } from 'phosphor-react-native/src/icons/Leaf';
@@ -51,7 +53,9 @@ import { SpeakerHighIcon } from 'phosphor-react-native/src/icons/SpeakerHigh';
 import { SunIcon } from 'phosphor-react-native/src/icons/Sun';
 import { TextUnderlineIcon } from 'phosphor-react-native/src/icons/TextUnderline';
 import { TranslateIcon } from 'phosphor-react-native/src/icons/Translate';
+import { TrophyIcon } from 'phosphor-react-native/src/icons/Trophy';
 import { UserCircleIcon } from 'phosphor-react-native/src/icons/UserCircle';
+import { UsersThreeIcon } from 'phosphor-react-native/src/icons/UsersThree';
 import { WarningCircleIcon } from 'phosphor-react-native/src/icons/WarningCircle';
 import { XIcon } from 'phosphor-react-native/src/icons/X';
 
@@ -74,6 +78,10 @@ const ICONS = {
   verbs: GitBranchIcon,
   progress: ChartLineUpIcon,
   level: GraduationCapIcon,
+  // community
+  community: UsersThreeIcon,
+  trophy: TrophyIcon,
+  streak: FireIcon,
   // actions and states
   back: CaretLeftIcon,
   forward: CaretRightIcon,
@@ -98,6 +106,7 @@ const ICONS = {
   signOut: SignOutIcon,
   translate: TranslateIcon,
   gift: GiftIcon,
+  heart: HeartIcon,
   lock: LockSimpleIcon,
   next: ArrowRightIcon,
   reveal: EyeIcon,

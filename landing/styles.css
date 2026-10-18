@@ -166,6 +166,7 @@ h3 { font-size: 20px; font-weight: 700; }
 .open-card { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 40px; border-radius: var(--radius); background: var(--surface); border: 1px solid var(--border); }
 .open-card h2 { font-size: 32px; }
 .open-card p { color: var(--muted); margin-top: 10px; max-width: 56ch; }
+.open-actions { display: flex; flex-wrap: wrap; gap: 12px; flex-shrink: 0; }
 @media (max-width: 760px) { .open-card { flex-direction: column; align-items: flex-start; padding: 28px; } }
 
 /* FAQ */

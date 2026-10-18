@@ -49,7 +49,10 @@ function WordSheet({ word, context, onClose }) {
       id,
       de: headword,
       wordId: entry?.id ?? null,
-      context: context ? { de: context.de, tr: context.tr ?? null } : null,
+      // `from`: the reading text the word was found in, if any.
+      context: context
+        ? { de: context.de, tr: context.tr ?? null, ...(context.from ? { from: context.from } : {}) }
+        : null,
     });
   }
 

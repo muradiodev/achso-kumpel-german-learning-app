@@ -3,12 +3,14 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/app-text';
 import { Button } from '@/components/button';
+import { Chip } from '@/components/chip';
 import { Icon } from '@/components/icon';
 import { LevelTag } from '@/components/level-tag';
 import { SpeakButton } from '@/components/speak-button';
 import { TappableText } from '@/components/tappable-text';
 import { TextField } from '@/components/text-field';
 import { isSameAnswer } from '@/features/practice/answer-check';
+import { clozeOptions } from '@/features/practice/cloze-hints';
 import { speakGerman } from '@/features/speech/tts';
 import { ENTRY_BY_ID } from '@/features/words/lookup';
 import { RATING } from '@/features/srs/scheduler';
@@ -105,45 +107,45 @@ export function WordCard({ item, onAnswer }) {
       >
         <LevelTag level={word.level} label={t('practice.modes.words.title')} />
         <View style={[promptCard, { marginTop: space.sm }]}>
-        {direction === 'de-en' ? (
-          <GermanLine text={word.de} variant="display" tappable={false} />
-        ) : (
-          <AppText variant="display">{meaning}</AppText>
-        )}
+          {direction === 'de-en' ? (
+            <GermanLine text={word.de} variant="display" tappable={false} />
+          ) : (
+            <AppText variant="display">{meaning}</AppText>
+          )}
 
-        {revealed ? (
-          <View style={{ gap: space.lg, marginTop: space.lg }}>
-            {direction === 'de-en' ? (
-              <AppText variant="title" tone="accent">
-                {meaning}
-              </AppText>
-            ) : (
-              <GermanLine text={word.de} />
-            )}
-            {word.plural ? <AppText tone="muted">{`Plural: ${word.plural}`}</AppText> : null}
-            <View style={{ gap: space.xs }}>
-              <AppText variant="caption" tone="faint">
-                {t('practice.exampleLabel')}
-              </AppText>
-              <GermanLine text={word.example.de} variant="body" context={word.example} />
-              <AppText variant="small" tone="muted">
-                {tr(word.example.tr, lang)}
+          {revealed ? (
+            <View style={{ gap: space.lg, marginTop: space.lg }}>
+              {direction === 'de-en' ? (
+                <AppText variant="title" tone="accent">
+                  {meaning}
+                </AppText>
+              ) : (
+                <GermanLine text={word.de} />
+              )}
+              {word.plural ? <AppText tone="muted">{`Plural: ${word.plural}`}</AppText> : null}
+              <View style={{ gap: space.xs }}>
+                <AppText variant="caption" tone="faint">
+                  {t('practice.exampleLabel')}
+                </AppText>
+                <GermanLine text={word.example.de} variant="body" context={word.example} />
+                <AppText variant="small" tone="muted">
+                  {tr(word.example.tr, lang)}
+                </AppText>
+              </View>
+            </View>
+          ) : (
+            <View
+              style={[
+                styles.revealBox,
+                { borderColor: colors.accentMuted, borderRadius: radius.lg, marginTop: space.lg },
+              ]}
+            >
+              <Icon name="reveal" size={28} color={colors.accent} />
+              <AppText weight="600" tone="accent">
+                {t('practice.tapToReveal')}
               </AppText>
             </View>
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.revealBox,
-              { borderColor: colors.accentMuted, borderRadius: radius.lg, marginTop: space.lg },
-            ]}
-          >
-            <Icon name="reveal" size={28} color={colors.accent} />
-            <AppText weight="600" tone="accent">
-              {t('practice.tapToReveal')}
-            </AppText>
-          </View>
-        )}
+          )}
         </View>
       </Pressable>
       {revealed ? (
@@ -162,12 +164,27 @@ function splitCloze(text, word) {
   return [text.slice(0, start), text.slice(start + word.length)];
 }
 
-function CheckCard({ title, level, prompt, renderPrompt, hint, expected, inputLabel, onAnswer, speakText, context }) {
+// getOptions: optional () => [word, word, word] behind a Hint button. Using the
+// hint still counts a right answer, but as Hard, so the card comes back sooner.
+function CheckCard({
+  title,
+  level,
+  prompt,
+  renderPrompt,
+  hint,
+  expected,
+  inputLabel,
+  onAnswer,
+  speakText,
+  context,
+  getOptions,
+}) {
   const { t } = useI18n();
   const { space } = useTheme();
   const promptCard = usePromptCard();
   const [typed, setTyped] = useState('');
   const [result, setResult] = useState(null);
+  const [options, setOptions] = useState(null);
 
   function check() {
     const correct = isSameAnswer(typed, expected);
@@ -189,16 +206,40 @@ function CheckCard({ title, level, prompt, renderPrompt, hint, expected, inputLa
         </View>
         <View style={{ marginTop: space.xl, gap: space.lg }}>
           {result === null ? (
-            <TextField
-              label={inputLabel}
-              value={typed}
-              onChangeText={setTyped}
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="done"
-              onSubmitEditing={check}
-              autoFocus
-            />
+            <>
+              <TextField
+                label={inputLabel}
+                value={typed}
+                onChangeText={setTyped}
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="done"
+                onSubmitEditing={check}
+                autoFocus
+              />
+              {getOptions && !options ? (
+                <Button
+                  label={t('practice.hint')}
+                  icon="sparkle"
+                  variant="ghost"
+                  size="md"
+                  onPress={() => setOptions(getOptions())}
+                  style={styles.hintButton}
+                />
+              ) : null}
+              {options ? (
+                <View style={{ gap: space.sm }}>
+                  <AppText variant="small" tone="muted">
+                    {t('practice.hintBody')}
+                  </AppText>
+                  <View style={styles.hintRow}>
+                    {options.map((word) => (
+                      <Chip key={word} label={word} selected={typed === word} onPress={() => setTyped(word)} />
+                    ))}
+                  </View>
+                </View>
+              ) : null}
+            </>
           ) : (
             <>
               <Feedback correct={result} expected={expected} given={typed} />
@@ -210,7 +251,10 @@ function CheckCard({ title, level, prompt, renderPrompt, hint, expected, inputLa
       {result === null ? (
         <Button label={t('practice.check')} onPress={check} disabled={!typed.trim()} />
       ) : (
-        <Button label={t('practice.next')} onPress={() => onAnswer(result ? RATING.GOOD : RATING.AGAIN, result)} />
+        <Button
+          label={t('practice.next')}
+          onPress={() => onAnswer(result ? (options ? RATING.HARD : RATING.GOOD) : RATING.AGAIN, result)}
+        />
       )}
     </View>
   );
@@ -253,6 +297,7 @@ export function ClozeCard({ item, onAnswer }) {
       speakText={sentence.de}
       context={sentence}
       onAnswer={onAnswer}
+      getOptions={() => clozeOptions(sentence)}
     />
   );
 }
@@ -316,8 +361,18 @@ export function AuxCard({ item, onAnswer }) {
         <Button label={t('practice.next')} onPress={() => onAnswer(correct ? RATING.GOOD : RATING.AGAIN, correct)} />
       ) : (
         <View style={styles.choiceRow}>
-          <Button label="haben" variant="secondary" onPress={() => choose('haben')} style={[styles.flex, styles.choice]} />
-          <Button label="sein" variant="secondary" onPress={() => choose('sein')} style={[styles.flex, styles.choice]} />
+          <Button
+            label="haben"
+            variant="secondary"
+            onPress={() => choose('haben')}
+            style={[styles.flex, styles.choice]}
+          />
+          <Button
+            label="sein"
+            variant="secondary"
+            onPress={() => choose('sein')}
+            style={[styles.flex, styles.choice]}
+          />
         </View>
       )}
     </View>
@@ -339,25 +394,25 @@ export function MyWordCard({ item, onAnswer }) {
       <View style={styles.prompt}>
         <LevelTag label={t('myWords.title')} />
         <View style={[promptCard, { marginTop: space.sm }]}>
-        <GermanLine text={word.de} variant="display" tappable={false} />
-        {revealed && entry ? (
-          <AppText variant="title" tone="accent">
-            {tr(entry.tr, lang)}
-          </AppText>
-        ) : null}
-        {revealed && word.context ? (
-          <View style={{ gap: space.xs, marginTop: space.lg }}>
-            <AppText variant="caption" tone="faint">
-              {t('myWords.foundIn')}
+          <GermanLine text={word.de} variant="display" tappable={false} />
+          {revealed && entry ? (
+            <AppText variant="title" tone="accent">
+              {tr(entry.tr, lang)}
             </AppText>
-            <GermanLine text={word.context.de} variant="body" context={word.context} />
-            {word.context.tr ? (
-              <AppText variant="small" tone="muted">
-                {tr(word.context.tr, lang)}
+          ) : null}
+          {revealed && word.context ? (
+            <View style={{ gap: space.xs, marginTop: space.lg }}>
+              <AppText variant="caption" tone="faint">
+                {t('myWords.foundIn')}
               </AppText>
-            ) : null}
-          </View>
-        ) : null}
+              <GermanLine text={word.context.de} variant="body" context={word.context} />
+              {word.context.tr ? (
+                <AppText variant="small" tone="muted">
+                  {tr(word.context.tr, lang)}
+                </AppText>
+              ) : null}
+            </View>
+          ) : null}
         </View>
       </View>
       {revealed ? (
@@ -379,6 +434,8 @@ export const CARD_BY_KIND = {
 };
 
 const styles = StyleSheet.create({
+  hintButton: { alignSelf: 'flex-start', paddingHorizontal: 0 },
+  hintRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   card: { flex: 1, justifyContent: 'space-between', gap: 24 },
   prompt: { gap: 8 },
   flex: { flex: 1 },
