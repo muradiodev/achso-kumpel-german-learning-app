@@ -1,0 +1,171 @@
+// High-frequency vocabulary, always with a real example sentence.
+// Row: [german, english, exampleDe, exampleEn, extra?]
+//   german  nouns include the article: 'die Wohnung'
+//   extra   { pl: plural, t: ['work'] tags, az: translation, exAz: example translation }
+// IDs come from the German headword, so never edit a headword in place:
+// add a new row instead, or progress for the old one is orphaned.
+
+const rows = {
+  A1: [
+    ['die Wohnung', 'apartment', 'Meine Wohnung ist klein, aber gemütlich.', 'My apartment is small but cosy.', { pl: 'die Wohnungen' }],
+    ['der Termin', 'appointment', 'Ich habe morgen um neun einen Termin beim Arzt.', "I have a doctor's appointment tomorrow at nine.", { pl: 'die Termine' }],
+    ['die Rechnung', 'bill, invoice', 'Die Rechnung, bitte!', 'The bill, please!', { pl: 'die Rechnungen' }],
+    ['der Kollege', 'colleague (m)', 'Mein Kollege kommt aus Spanien.', 'My colleague is from Spain.', { pl: 'die Kollegen', t: ['work'] }],
+    ['arbeiten', 'to work', 'Ich arbeite heute von zu Hause.', "I'm working from home today.", { t: ['work'] }],
+    ['brauchen', 'to need', 'Brauchst du Hilfe?', 'Do you need help?'],
+    ['fragen', 'to ask', 'Kann ich dich kurz was fragen?', 'Can I ask you something quickly?'],
+    ['kaufen', 'to buy', 'Ich kaufe noch schnell Brot.', "I'll just quickly buy some bread."],
+    ['heute', 'today', 'Heute habe ich keine Zeit.', "I don't have time today."],
+    ['morgen', 'tomorrow', 'Bis morgen!', 'See you tomorrow!'],
+    ['gleich', 'in a moment', 'Ich bin gleich da.', "I'll be there in a moment."],
+    ['leider', 'unfortunately', 'Leider kann ich nicht kommen.', "Unfortunately I can't come."],
+    ['das Wochenende', 'weekend', 'Was machst du am Wochenende?', 'What are you doing at the weekend?', { pl: 'die Wochenenden' }],
+    ['die Arbeit', 'work', 'Ich fahre mit dem Fahrrad zur Arbeit.', 'I cycle to work.', { t: ['work'] }],
+    ['der Bahnhof', 'train station', 'Wir treffen uns am Bahnhof.', "We'll meet at the station.", { pl: 'die Bahnhöfe' }],
+    ['teuer', 'expensive', 'Die Miete in München ist sehr teuer.', 'Rent in Munich is very expensive.'],
+    ['schnell', 'quick, fast', 'Kannst du schnell kommen?', 'Can you come quickly?'],
+    ['fertig', 'done, ready', 'Bist du fertig?', 'Are you done?'],
+    ['die Zeit', 'time', 'Hast du kurz Zeit?', 'Do you have a minute?'],
+    ['das Geld', 'money', 'Ich habe kein Geld dabei.', "I don't have any money on me."],
+    ['wohnen', 'to live (reside)', 'Ich wohne seit drei Jahren in Berlin.', "I've been living in Berlin for three years."],
+    ['verstehen', 'to understand', 'Das verstehe ich nicht.', "I don't understand that."],
+  ],
+  A2: [
+    ['der Feierabend', 'end of the workday', 'Endlich Feierabend!', 'Finally done for the day!', { t: ['work'] }],
+    ['die Besprechung', 'meeting', 'Die Besprechung dauert eine Stunde.', 'The meeting takes an hour.', { pl: 'die Besprechungen', t: ['work'] }],
+    ['erledigen', 'to get done', 'Ich muss heute noch ein paar Sachen erledigen.', 'I still have to get a few things done today.'],
+    ['vergessen', 'to forget', 'Ich habe meinen Schlüssel vergessen.', 'I forgot my key.'],
+    ['sich kümmern um', 'to take care of', 'Ich kümmere mich darum.', "I'll take care of it.", { t: ['work'] }],
+    ['die Erfahrung', 'experience', 'Ich habe viel Erfahrung mit Java.', 'I have a lot of experience with Java.', { pl: 'die Erfahrungen', t: ['work'] }],
+    ['der Vertrag', 'contract', 'Ich habe den Vertrag noch nicht unterschrieben.', "I haven't signed the contract yet.", { pl: 'die Verträge' }],
+    ['die Kündigung', 'notice, termination', 'Er hat seine Kündigung eingereicht.', 'He handed in his notice.', { pl: 'die Kündigungen', t: ['work'] }],
+    ['vorhaben', 'to plan, to intend', 'Hast du heute Abend schon was vor?', 'Do you have plans tonight?'],
+    ['die Erkältung', 'cold (illness)', 'Ich habe eine Erkältung und bleibe zu Hause.', 'I have a cold and am staying home.'],
+    ['sich krankmelden', 'to call in sick', 'Ich muss mich heute krankmelden.', 'I have to call in sick today.', { t: ['work'] }],
+    ['der Nachbar', 'neighbour', 'Unser Nachbar ist sehr nett.', 'Our neighbour is very nice.', { pl: 'die Nachbarn' }],
+    ['die Miete', 'rent', 'Die Miete ist am Ersten fällig.', 'Rent is due on the first.'],
+    ['bequem', 'comfortable', 'Die Schuhe sind echt bequem.', 'These shoes are really comfortable.'],
+    ['pünktlich', 'on time', 'Der Zug ist ausnahmsweise pünktlich.', 'The train is on time for once.'],
+    ['unterwegs', 'on the way, out', 'Ich bin gerade unterwegs, ich rufe dich später an.', "I'm out right now, I'll call you later."],
+    ['eigentlich', 'actually', 'Eigentlich wollte ich heute früher gehen.', 'Actually, I wanted to leave earlier today.'],
+    ['trotzdem', 'still, anyway', 'Es regnet, aber wir gehen trotzdem raus.', "It's raining, but we're going out anyway."],
+    ['die Ahnung', 'idea, clue', 'Keine Ahnung!', 'No idea!'],
+    ['Bescheid sagen', 'to let someone know', 'Sag mir Bescheid, wenn du da bist.', "Let me know when you're there."],
+    ['spät', 'late', 'Sorry, ich bin zu spät.', "Sorry, I'm late."],
+    ['der Schlüssel', 'key', 'Hast du deinen Schlüssel dabei?', 'Do you have your key with you?', { pl: 'die Schlüssel' }],
+  ],
+  B1: [
+    ['die Frist', 'deadline', 'Die Frist endet am Freitag.', 'The deadline is Friday.', { pl: 'die Fristen', t: ['work'] }],
+    ['die Lösung', 'solution', 'Wir brauchen eine schnelle Lösung.', 'We need a quick solution.', { pl: 'die Lösungen', t: ['work'] }],
+    ['der Aufwand', 'effort', 'Der Aufwand lohnt sich nicht.', "It's not worth the effort.", { t: ['work'] }],
+    ['sich lohnen', 'to be worth it', 'Es lohnt sich, früh zu buchen.', "It's worth booking early."],
+    ['verschieben', 'to postpone, to move', 'Können wir das Meeting auf morgen verschieben?', 'Can we move the meeting to tomorrow?', { t: ['work'] }],
+    ['absagen', 'to cancel', 'Ich muss den Termin leider absagen.', 'Unfortunately I have to cancel the appointment.'],
+    ['zuständig für', 'responsible for', 'Wer ist dafür zuständig?', 'Who is responsible for that?', { t: ['work'] }],
+    ['die Rückmeldung', 'feedback, reply', 'Danke für die schnelle Rückmeldung.', 'Thanks for the quick reply.', { pl: 'die Rückmeldungen', t: ['work'] }],
+    ['der Zusammenhang', 'context, connection', 'Ich verstehe den Zusammenhang nicht.', "I don't see the connection.", { pl: 'die Zusammenhänge' }],
+    ['die Voraussetzung', 'requirement, prerequisite', 'Gute Deutschkenntnisse sind Voraussetzung.', 'Good German is a requirement.', { pl: 'die Voraussetzungen', t: ['work'] }],
+    ['die Aufgabe', 'task', 'Das ist keine leichte Aufgabe.', "That's not an easy task.", { pl: 'die Aufgaben', t: ['work'] }],
+    ['sich beschweren über', 'to complain about', 'Die Nachbarn haben sich über den Lärm beschwert.', 'The neighbours complained about the noise.'],
+    ['vorschlagen', 'to suggest', 'Ich schlage vor, dass wir eine Pause machen.', 'I suggest we take a break.', { t: ['work'] }],
+    ['übernehmen', 'to take over', 'Kannst du diese Aufgabe übernehmen?', 'Can you take over this task?', { t: ['work'] }],
+    ['ausfallen', 'to be cancelled', 'Der Zug fällt heute aus.', 'The train is cancelled today.'],
+    ['die Ausrede', 'excuse', 'Das ist doch nur eine Ausrede.', "That's just an excuse.", { pl: 'die Ausreden' }],
+    ['ehrlich gesagt', 'honestly', 'Ehrlich gesagt habe ich keine Lust.', "Honestly, I don't feel like it."],
+    ['auf jeden Fall', 'definitely', 'Ich komme auf jeden Fall.', "I'm definitely coming."],
+    ['die Stimmung', 'mood, atmosphere', 'Die Stimmung im Team ist gut.', 'The mood in the team is good.'],
+    ['nachfragen', 'to follow up, to ask again', 'Ich frage nochmal beim Kunden nach.', "I'll follow up with the client.", { t: ['work'] }],
+    ['der Fortschritt', 'progress', 'Wir machen gute Fortschritte.', "We're making good progress.", { pl: 'die Fortschritte', t: ['work'] }],
+    ['umziehen', 'to move (house)', 'Wir ziehen nächsten Monat um.', "We're moving next month."],
+  ],
+  B2: [
+    ['die Anforderung', 'requirement (spec)', 'Die Anforderungen haben sich geändert.', 'The requirements have changed.', { pl: 'die Anforderungen', t: ['work'] }],
+    ['die Umsetzung', 'implementation', 'Die Umsetzung dauert länger als geplant.', 'The implementation is taking longer than planned.', { t: ['work'] }],
+    ['umsetzen', 'to implement', 'Wie wollen wir das technisch umsetzen?', 'How do we want to implement this technically?', { t: ['work'] }],
+    ['der Engpass', 'bottleneck', 'Die Datenbank ist im Moment der Engpass.', 'The database is the bottleneck at the moment.', { pl: 'die Engpässe', t: ['work'] }],
+    ['die Abstimmung', 'alignment; vote', 'Das braucht noch etwas Abstimmung mit dem Produktteam.', 'That still needs some alignment with the product team.', { t: ['work'] }],
+    ['berücksichtigen', 'to take into account', 'Wir sollten auch die Performance berücksichtigen.', 'We should also take performance into account.', { t: ['work'] }],
+    ['die Verantwortung', 'responsibility', 'Ich übernehme die Verantwortung dafür.', 'I take responsibility for that.', { t: ['work'] }],
+    ['der Kompromiss', 'compromise', 'Vielleicht finden wir einen Kompromiss.', 'Maybe we can find a compromise.', { pl: 'die Kompromisse' }],
+    ['nachvollziehen', 'to follow (reasoning)', 'Ich kann deine Argumente gut nachvollziehen.', 'I can follow your arguments well.', { t: ['work'] }],
+    ['die Herausforderung', 'challenge', 'Das ist eine echte Herausforderung.', "That's a real challenge.", { pl: 'die Herausforderungen' }],
+    ['beeinträchtigen', 'to impair, to affect', 'Der Ausfall beeinträchtigt alle Nutzer.', 'The outage affects all users.', { t: ['work'] }],
+    ['vermeiden', 'to avoid', 'Wir sollten doppelten Code vermeiden.', 'We should avoid duplicate code.', { t: ['work'] }],
+    ['die Auswirkung', 'effect, impact', 'Welche Auswirkungen hat die Änderung?', 'What impact does the change have?', { pl: 'die Auswirkungen', t: ['work'] }],
+    ['voraussichtlich', 'expected, probably', 'Das Feature ist voraussichtlich nächste Woche fertig.', 'The feature will probably be done next week.', { t: ['work'] }],
+    ['ansprechen', 'to bring up, to address', 'Ich möchte noch ein Thema ansprechen.', "I'd like to bring up one more topic.", { t: ['work'] }],
+    ['einschätzen', 'to assess', 'Wie schätzt du das Risiko ein?', 'How do you assess the risk?', { t: ['work'] }],
+    ['die Rücksprache', 'consultation', 'Ich halte kurz Rücksprache mit meiner Chefin.', "I'll quickly check with my boss.", { t: ['work'] }],
+    ['zuverlässig', 'reliable', 'Er ist sehr zuverlässig.', 'He is very reliable.'],
+    ['der Zeitdruck', 'time pressure', 'Wir stehen unter großem Zeitdruck.', "We're under a lot of time pressure.", { t: ['work'] }],
+    ['sich auseinandersetzen mit', 'to engage with, to deal with', 'Ich habe mich intensiv mit dem Thema auseinandergesetzt.', "I've looked into the topic in depth."],
+    ['im Großen und Ganzen', 'by and large', 'Im Großen und Ganzen bin ich zufrieden.', "By and large, I'm satisfied."],
+    ['der Eindruck', 'impression', 'Ich habe den Eindruck, dass wir aneinander vorbeireden.', "I get the impression we're talking past each other.", { pl: 'die Eindrücke' }],
+  ],
+  C1: [
+    ['die Tragweite', 'significance, scope', 'Die Tragweite dieser Entscheidung ist vielen nicht klar.', "Many don't realise how far-reaching this decision is."],
+    ['in Kauf nehmen', 'to accept (a downside)', 'Diesen Nachteil nehmen wir in Kauf.', 'We accept this downside.', { t: ['work'] }],
+    ['auf den Punkt bringen', 'to get to the point', 'Kannst du das kurz auf den Punkt bringen?', 'Can you briefly get to the point?', { t: ['work'] }],
+    ['nachhaltig', 'lasting, sustainable', 'Wir brauchen eine nachhaltige Lösung, keinen Workaround.', 'We need a lasting solution, not a workaround.', { t: ['work'] }],
+    ['ausschlaggebend', 'decisive', 'Ausschlaggebend war am Ende der Preis.', 'In the end, the price was decisive.'],
+    ['der Spielraum', 'leeway', 'Beim Budget haben wir wenig Spielraum.', 'We have little leeway on the budget.', { t: ['work'] }],
+    ['hinterfragen', 'to question', 'Wir sollten diese Annahme hinterfragen.', 'We should question this assumption.', { t: ['work'] }],
+    ['zielführend', 'productive, effective', 'Diese Diskussion ist nicht zielführend.', "This discussion isn't getting us anywhere.", { t: ['work'] }],
+    ['die Stellungnahme', 'statement, position', 'Ich bitte um eine kurze Stellungnahme bis Freitag.', "I'd ask for a short statement by Friday.", { pl: 'die Stellungnahmen', t: ['work'] }],
+    ['gewährleisten', 'to ensure', 'Wie gewährleisten wir die Datensicherheit?', 'How do we ensure data security?', { t: ['work'] }],
+    ['zur Sprache bringen', 'to raise (a topic)', 'Ich möchte das in der Retro zur Sprache bringen.', "I'd like to bring that up in the retro.", { t: ['work'] }],
+    ['der Ansatz', 'approach', 'Ich finde den Ansatz grundsätzlich gut.', 'I basically like the approach.', { pl: 'die Ansätze', t: ['work'] }],
+    ['grundsätzlich', 'in principle', 'Grundsätzlich spricht nichts dagegen.', "In principle, there's nothing against it."],
+    ['die Rahmenbedingungen', 'conditions, constraints', 'Unter diesen Rahmenbedingungen ist das nicht machbar.', "Under these conditions it's not feasible.", { t: ['work'] }],
+    ['abwägen', 'to weigh up', 'Wir müssen Vor- und Nachteile abwägen.', 'We need to weigh up the pros and cons.'],
+    ['unterschätzen', 'to underestimate', 'Wir haben den Aufwand unterschätzt.', 'We underestimated the effort.', { t: ['work'] }],
+    ['einwandfrei', 'flawless', 'Das System läuft einwandfrei.', 'The system runs flawlessly.', { t: ['work'] }],
+    ['der Einwand', 'objection', 'Gibt es noch Einwände?', 'Are there any objections?', { pl: 'die Einwände', t: ['work'] }],
+    ['verbindlich', 'binding, firm', 'Ich brauche eine verbindliche Zusage.', 'I need a firm commitment.', { t: ['work'] }],
+    ['im Blick behalten', 'to keep an eye on', 'Wir sollten die Kosten im Blick behalten.', 'We should keep an eye on the costs.'],
+    ['sich herausstellen', 'to turn out', 'Es hat sich herausgestellt, dass der Fehler im Cache lag.', 'It turned out that the bug was in the cache.', { t: ['work'] }],
+    ['die Zuständigkeit', 'area of responsibility', 'Das liegt nicht in meiner Zuständigkeit.', "That's not within my responsibility.", { pl: 'die Zuständigkeiten', t: ['work'] }],
+  ],
+  C2: [
+    ['reinen Wein einschenken', 'to tell the plain truth', 'Ich muss dir reinen Wein einschenken: Das Projekt ist gefährdet.', 'I have to be straight with you: the project is at risk.'],
+    ['die Gratwanderung', 'balancing act', 'Das ist eine Gratwanderung zwischen Qualität und Tempo.', "It's a balancing act between quality and speed."],
+    ['unter den Teppich kehren', 'to sweep under the rug', 'Wir sollten das Problem nicht unter den Teppich kehren.', "We shouldn't sweep the problem under the rug."],
+    ['ins Fettnäpfchen treten', 'to put your foot in it', 'Da bin ich wohl ins Fettnäpfchen getreten.', 'I guess I put my foot in it there.'],
+    ['die Gepflogenheit', 'custom, practice', 'Ich kenne die Gepflogenheiten hier noch nicht.', "I don't know the customs here yet.", { pl: 'die Gepflogenheiten' }],
+    ['unumgänglich', 'unavoidable', 'Eine Verschiebung ist leider unumgänglich.', 'Unfortunately a delay is unavoidable.', { t: ['work'] }],
+    ['ausloten', 'to sound out, to explore', 'Wir sollten erst mal die Möglichkeiten ausloten.', 'We should explore the options first.', { t: ['work'] }],
+    ['weitreichend', 'far-reaching', 'Das hätte weitreichende Folgen.', 'That would have far-reaching consequences.'],
+    ['auf der Kippe stehen', 'to hang in the balance', 'Der Release steht auf der Kippe.', 'The release is hanging in the balance.', { t: ['work'] }],
+    ['einen Gang zurückschalten', 'to take it down a notch', 'Nach dem Release schalten wir einen Gang zurück.', "After the release we'll take it down a notch."],
+    ['vorbehaltlich', 'subject to', 'Vorbehaltlich der Zustimmung starten wir im März.', 'Subject to approval, we start in March.', { t: ['work'] }],
+    ['die Zwickmühle', 'dilemma', 'Ich stecke in einer Zwickmühle.', "I'm caught in a dilemma."],
+  ],
+};
+
+const ARTICLES = ['der ', 'die ', 'das '];
+
+const slug = (text) =>
+  text
+    .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+
+export const WORDS = Object.entries(rows).flatMap(([level, list]) =>
+  list.map(([de, en, exDe, exEn, extra = {}]) => {
+    const article = ARTICLES.find((a) => de.startsWith(a))?.trim() ?? null;
+    return {
+      id: `w-${slug(de)}`,
+      level,
+      de,
+      article,
+      plural: extra.pl ?? null,
+      tags: ['everyday', ...(extra.t ?? [])],
+      tr: extra.az ? { en, az: extra.az } : { en },
+      example: { de: exDe, tr: extra.exAz ? { en: exEn, az: extra.exAz } : { en: exEn } },
+    };
+  }),
+);

@@ -39,3 +39,17 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## This project: AchsoKumpel
+
+German practice app for B1 to C1 learners (work + everyday German). JavaScript only, no TypeScript.
+
+- Content lives in `src/data/`. Every translatable field is `{ en: '...' }` keyed by language; never hardcode English inside data logic. Run `npm run check:content` after editing content.
+- UI strings live in `src/i18n/locales/en.js`; use `const { t } = useI18n()`, never inline English in screens.
+- Design tokens in `src/theme/index.js`: one accent (burnt orange), zinc neutrals, light + dark. Radius rule: buttons/inputs `md`, cards `lg`, chips `pill`. No em dashes in any copy.
+- Registration is mandatory. The guards in `src/app/_layout.js` move the user through welcome → register → setup/profile → setup/avatar → setup/levels → tabs.
+- Auth is device-local (`src/features/auth/local-auth-provider.js`); a remote provider must keep the same methods.
+- AI features go through `src/features/ai/ai-service.js` (see `docs/AI.md`). No API keys in the app.
+- IDs in `src/data` are stored in user progress. Do not rename them; sentences are positional per level, so append only.
+- Every release: bump `expo.version` in app.json, add a `src/data/changelog.js` entry, and raise `expo.extra.minSupportedVersion` if old versions can no longer handle saved data or content. Progress shape changes need a step in `src/features/progress/migrations.js`. See README "Releases and version notices".
+- Wide screens (web, tablets) render inside `AppFrame` (`src/components/app-frame.js`). Overlays must render inside the frame (absolute views), not RN `Modal`, which escapes it on web.

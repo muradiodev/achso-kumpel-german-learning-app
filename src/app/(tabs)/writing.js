@@ -1,0 +1,86 @@
+import { router } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { AppText } from '@/components/app-text';
+import { MAX_WIDTH } from '@/components/screen';
+import { Chip } from '@/components/chip';
+import { Surface } from '@/components/surface';
+import { WRITING_TASKS, WRITING_TYPES } from '@/data';
+import { useProgress } from '@/features/progress/progress-context';
+import { tr } from '@/i18n/content';
+import { useI18n } from '@/i18n';
+import { useTheme } from '@/theme';
+
+export default function Writing() {
+  const { t, lang } = useI18n();
+  const { colors, space } = useTheme();
+  const insets = useSafeAreaInsets();
+  const { writing } = useProgress();
+  const [filter, setFilter] = useState('all');
+
+  const tasks = useMemo(
+    () => (filter === 'all' ? WRITING_TASKS : WRITING_TASKS.filter((task) => task.type === filter)),
+    [filter],
+  );
+
+  const renderItem = useCallback(
+    ({ item }) => {
+      const copied = writing[item.id]?.copied ?? 0;
+      return (
+        <Surface onPress={() => router.push(`/writing/${item.id}`)} style={{ marginBottom: space.md }}>
+          <AppText variant="caption" tone="accent">
+            {`${t(`writing.filters.${item.type}`)} · ${item.level}`}
+          </AppText>
+          <AppText weight="600" style={{ marginTop: space.xs }}>
+            {tr(item.title, lang)}
+          </AppText>
+          <AppText variant="small" tone="muted" style={{ marginTop: space.xs }}>
+            {[
+              t('writing.minutes', { count: item.minutes }),
+              t('writing.words', { count: item.words }),
+              copied ? t('writing.copiedTimes', { count: copied }) : null,
+            ]
+              .filter(Boolean)
+              .join('  ·  ')}
+          </AppText>
+        </Surface>
+      );
+    },
+    [writing, t, lang, space],
+  );
+
+  return (
+    <FlatList
+      data={tasks}
+      keyExtractor={(item) => item.id}
+      renderItem={renderItem}
+      style={{ backgroundColor: colors.bg }}
+      contentContainerStyle={{ width: '100%', maxWidth: MAX_WIDTH, alignSelf: 'center', paddingHorizontal: space.xl, paddingTop: insets.top + space.lg, paddingBottom: space.xxl }}
+      ListHeaderComponent={
+        <View style={{ marginBottom: space.lg }}>
+          <AppText variant="title">{t('writing.title')}</AppText>
+          <AppText tone="muted" style={{ marginTop: space.sm }}>
+            {t('writing.sub')}
+          </AppText>
+          <View style={[styles.chips, { marginTop: space.lg }]}>
+            <Chip label={t('writing.filters.all')} selected={filter === 'all'} onPress={() => setFilter('all')} />
+            {WRITING_TYPES.map((type) => (
+              <Chip key={type} label={t(`writing.filters.${type}`)} selected={filter === type} onPress={() => setFilter(type)} />
+            ))}
+          </View>
+        </View>
+      }
+      ListFooterComponent={
+        <AppText variant="small" tone="faint" style={{ marginTop: space.md }}>
+          {t('writing.examNote')}
+        </AppText>
+      }
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
+});
